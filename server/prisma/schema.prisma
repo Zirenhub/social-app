@@ -16,11 +16,21 @@ datasource db {
 model User {
   id           Int      @id @default(autoincrement())
   email        String   @unique
-  username     String   @unique
   passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile Profile?
+}
+
+model Profile {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
   firstName    String
   lastName     String
   bio          String?
+  gender       Gender
+  dateOfBirth  DateTime
   profileImage String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -28,10 +38,15 @@ model User {
   posts            Post[]
   comments         Comment[]
   likes            Like[]
-  friendsAdded     Friendship[]    @relation("UserFriends")
-  friendOf         Friendship[]    @relation("FriendUser")
-  sentRequests     FriendRequest[] @relation("SentRequests")
-  receivedRequests FriendRequest[] @relation("ReceivedRequests")
+  friendsAdded     Friendship[]    @relation("ProfileFriendsAdded")
+  friendOf         Friendship[]    @relation("ProfileFriendOf")
+  sentRequests     FriendRequest[] @relation("ProfileSentRequests")
+  receivedRequests FriendRequest[] @relation("ProfileReceivedRequests")
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([username])
 }
 
 model Post {
@@ -41,10 +56,12 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  author   User      @relation(fields: [authorId], references: [id])
-  authorId Int
-  comments Comment[]
-  likes    Like[]
+  comments  Comment[]
+  likes     Like[]
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+
+  @@index([profileId, createdAt])
 }
 
 model Comment {
@@ -53,34 +70,38 @@ model Comment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  author   User @relation(fields: [authorId], references: [id])
-  authorId Int
-  post     Post @relation(fields: [postId], references: [id])
-  postId   Int
+  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+
+  @@index([postId, profileId])
 }
 
 model Like {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  user   User @relation(fields: [userId], references: [id])
-  userId Int
-  post   Post @relation(fields: [postId], references: [id])
-  postId Int
+  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
 
-  @@unique([userId, postId])
+  @@unique([profileId, postId])
+  @@index([postId, profileId])
 }
 
 model Friendship {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
 
-  user     User @relation("UserFriends", fields: [userId], references: [id])
-  userId   Int
-  friend   User @relation("FriendUser", fields: [friendId], references: [id])
-  friendId Int
+  profile   Profile @relation("ProfileFriendsAdded", fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+  friend    Profile @relation("ProfileFriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+  friendId  Int
 
-  @@unique([userId, friendId])
+  @@unique([profileId, friendId])
+  @@index([profileId, friendId])
 }
 
 model FriendRequest {
@@ -89,16 +110,23 @@ model FriendRequest {
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt
 
-  sender     User @relation("SentRequests", fields: [senderId], references: [id])
+  sender     Profile @relation("ProfileSentRequests", fields: [senderId], references: [id], onDelete: Cascade)
   senderId   Int
-  receiver   User @relation("ReceivedRequests", fields: [receiverId], references: [id])
+  receiver   Profile @relation("ProfileReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId Int
 
   @@unique([senderId, receiverId])
+  @@index([senderId, receiverId])
 }
 
 enum FriendRequestStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTEHR
 }
