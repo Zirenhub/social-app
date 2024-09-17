@@ -3,7 +3,7 @@ import SignUp from '../../components/auth/SignUp';
 
 function Auth() {
   return (
-    <div className="flex justify-center items-center flex-col m-24 gap-16">
+    <div className="flex justify-center items-center flex-col m-18 gap-16">
       <h1 className="text-green-500 font-bold text-9xl">Kquirtz</h1>
       <div className="flex shadow-md border-2 border-gray-50 rounded-md hover:border-gray-200 transition-all">
         <div className="px-6 flex gap-3">
