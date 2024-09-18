@@ -1,5 +1,5 @@
-import LogIn from '../../components/auth/LogIn';
-import SignUp from '../../components/auth/SignUp';
+import LogIn from '../../../components/auth/LogIn';
+import SignUp from '../../../components/auth/SignUp';
 
 function Auth() {
   return (

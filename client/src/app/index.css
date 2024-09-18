@@ -6,19 +6,19 @@
 @font-face {
   font-family: 'regular';
   font-weight: 400;
-  src: url('assets/fonts/regular.otf');
+  src: url('../assets/fonts/regular.otf');
 }
 
 @font-face {
   font-family: 'bold';
   font-weight: 700;
-  src: url('assets/fonts/bold.otf');
+  src: url('../assets/fonts/bold.otf');
 }
 
 @font-face {
   font-family: 'thin';
   font-weight: 100;
-  src: url('assets/fonts/thin.otf');
+  src: url('../assets/fonts/thin.otf');
 }
 
 @layer base {
