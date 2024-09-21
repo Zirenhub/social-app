@@ -50,6 +50,6 @@
   }
 
   .input-auth {
-    @apply border-2 rounded-sm px-2 py-1;
+    @apply border-2 text-gray-500 rounded-sm px-2 py-1;
   }
 }
