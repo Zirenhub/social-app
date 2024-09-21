@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
@@ -25,13 +25,16 @@ export const useSignUpForm = () => {
   const selectedMonth = watch('month');
   const selectedYear = watch('year');
 
-  useEffect(() => {
-    const errorMessages = Object.values(errors)
-      .map((error) => error?.message)
-      .filter(Boolean) as string[];
-
-    errorMessages.forEach((message) => toast.error(message));
+  const displayErrors = useCallback(() => {
+    const errorMessages = Object.values(errors).map((error) => error?.message);
+    errorMessages.forEach((message) => {
+      if (message) toast.error(message, { toastId: message });
+    });
   }, [errors]);
+
+  useEffect(() => {
+    displayErrors();
+  }, [errors, displayErrors]);
 
   const onSubmit: SubmitHandler<TFormInput> = (data) => {
     console.log('Form submitted', data);
@@ -60,6 +63,7 @@ export const useSignUpForm = () => {
     formMethods,
     onSubmit,
     getDayOptions,
+    displayErrors,
     getYearOptions,
   };
 };

@@ -1,23 +1,34 @@
 import { z } from 'zod';
 import { useSignUpForm } from './helpers/useSignUpForm';
-import PageOne from './signUpPages/pageOne';
+import PageOne from './signUpPages/PageOne';
 import User from './SignUpUserSchema';
 import { useState } from 'react';
+import PageTwo from './signUpPages/PageTwo';
+import { FIRST_PAGE_FIELDS } from '../../constants/formConstants';
 
 type TFormInput = z.infer<typeof User>;
 
 function SignUp() {
-  const [page, setPage] = useState<1 | 2>(1);
+  const [page, setPage] = useState<1 | 2>(2);
 
-  const { formMethods, onSubmit, getDayOptions, getYearOptions } =
-    useSignUpForm();
+  const {
+    formMethods,
+    displayErrors,
+    onSubmit,
+    getDayOptions,
+    getYearOptions,
+  } = useSignUpForm();
 
   const { handleSubmit } = formMethods;
 
   const nextPage = async () => {
-    const isValid = await formMethods.trigger();
+    // validate only fields that exist on first page of the signup process
+    // feels tacky and should be fixed later
+    const isValid = await formMethods.trigger(FIRST_PAGE_FIELDS);
     if (isValid) {
       setPage(2);
+    } else {
+      displayErrors();
     }
   };
 
@@ -43,12 +54,15 @@ function SignUp() {
           </button>
         </>
       ) : (
-        <>
-          <button type="button" onClick={prevPage} className="btn-auth">
-            Back
-          </button>
-          <input type="submit" className="btn-auth" />
-        </>
+        <div className="flex flex-col">
+          <PageTwo formMethods={formMethods} />
+          <div className="flex justify-between">
+            <button type="button" onClick={prevPage} className="btn-auth">
+              Back
+            </button>
+            <input type="submit" className="btn-auth" />
+          </div>
+        </div>
       )}
     </form>
   );
