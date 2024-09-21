@@ -1,23 +1,9 @@
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import User from '../SignUpUserSchema';
+import { MONTHS } from '../../../constants/formConstants';
 
 type TFormInput = z.infer<typeof User>;
-
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
 
 type Props = {
   formMethods: UseFormReturn<TFormInput>;
@@ -70,7 +56,7 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
             {...register('month', { setValueAs: (value) => Number(value) })}
             className="text-gray-500 input-auth"
           >
-            {months.map((month, index) => (
+            {MONTHS.map((month, index) => (
               <option key={month} value={index}>
                 {month}
               </option>
