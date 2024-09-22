@@ -1,15 +1,15 @@
+import PageOne from './signUpPages/PageOne';
+import PageTwo from './signUpPages/PageTwo';
 import { z } from 'zod';
 import { useSignUpForm } from './helpers/useSignUpForm';
-import PageOne from './signUpPages/PageOne';
 import User from './SignUpUserSchema';
 import { useState } from 'react';
-import PageTwo from './signUpPages/PageTwo';
 import { FIRST_PAGE_FIELDS } from '../../constants/formConstants';
 
 type TFormInput = z.infer<typeof User>;
 
 function SignUp() {
-  const [page, setPage] = useState<1 | 2>(2);
+  const [page, setPage] = useState<1 | 2>(1);
 
   const {
     formMethods,
@@ -41,7 +41,7 @@ function SignUp() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col py-3 px-5">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
       {page === 1 ? (
         <>
           <PageOne
@@ -49,20 +49,24 @@ function SignUp() {
             getDayOptions={getDayOptions}
             getYearOptions={getYearOptions}
           />
-          <button type="button" onClick={nextPage} className="btn-auth">
+          <button
+            type="button"
+            onClick={nextPage}
+            className="btn-auth self-end mb-2"
+          >
             Next
           </button>
         </>
       ) : (
-        <div className="flex flex-col">
+        <>
           <PageTwo formMethods={formMethods} />
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-2">
             <button type="button" onClick={prevPage} className="btn-auth">
               Back
             </button>
-            <input type="submit" className="btn-auth" />
+            <input type="submit" className="btn-submit" />
           </div>
-        </div>
+        </>
       )}
     </form>
   );

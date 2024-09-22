@@ -36,8 +36,8 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
         <option value="male">Male</option>
         <option value="other">Other</option>
       </select>
-      <div className="flex">
-        <div className="flex flex-col">
+      <div className="flex justify-between">
+        <div className="flex flex-col w-full">
           <label>Day</label>
           <select
             {...register('day', { setValueAs: (value) => Number(value) })}
@@ -50,7 +50,7 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
             ))}
           </select>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           <label>Month</label>
           <select
             {...register('month', { setValueAs: (value) => Number(value) })}
@@ -63,7 +63,7 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
             ))}
           </select>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full">
           <label>Year</label>
           <select
             {...register('year', { setValueAs: (value) => Number(value) })}
