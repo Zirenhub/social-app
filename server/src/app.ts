@@ -3,6 +3,7 @@ import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth";
+import errorMiddleware from "./middlewares/errorMiddleware";
 
 const app: Application = express();
 
@@ -20,16 +21,9 @@ app.use("/api", authRouter);
 app.use((req: Request, res: Response, next: NextFunction) => {
   const error = new Error("Not Found");
   res.status(404);
-  next(error);
+  next({ error });
 });
 
-app.use((error: Error, req: Request, res: Response) => {
-  res.status(res.statusCode || 500);
-  res.json({
-    error: {
-      message: error.message,
-    },
-  });
-});
+app.use(errorMiddleware);
 
 export default app;
