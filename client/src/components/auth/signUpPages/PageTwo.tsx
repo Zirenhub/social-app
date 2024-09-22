@@ -1,6 +1,6 @@
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
-import User from '../SignUpUserSchema';
+import User from '@shared/validation/userSchema';
 
 type TFormInput = z.infer<typeof User>;
 

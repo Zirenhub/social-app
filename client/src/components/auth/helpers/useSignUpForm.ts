@@ -2,8 +2,8 @@ import { useCallback, useEffect } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
-import User from '../SignUpUserSchema';
 import { z } from 'zod';
+import User from '@shared/validation/userSchema';
 
 type TFormInput = z.infer<typeof User>;
 

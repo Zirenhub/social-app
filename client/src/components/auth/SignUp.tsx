@@ -2,7 +2,7 @@ import PageOne from './signUpPages/PageOne';
 import PageTwo from './signUpPages/PageTwo';
 import { z } from 'zod';
 import { useSignUpForm } from './helpers/useSignUpForm';
-import User from './SignUpUserSchema';
+import User from '@shared/validation/userSchema';
 import { useState } from 'react';
 import { FIRST_PAGE_FIELDS } from '../../constants/formConstants';
 
