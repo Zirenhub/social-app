@@ -45,11 +45,15 @@
 }
 
 @layer components {
+  .btn-submit {
+    @apply hover:bg-blue-400 hover:cursor-pointer transition-all hover:scale-105 font-bold bg-blue-500 text-white w-fit self-end py-1 px-3 mt-3 rounded-md;
+  }
+
   .btn-auth {
-    @apply self-end border-2 w-fit text-lg mt-3 px-3 py-1 border-gray-400 rounded-sm mb-2 hover:cursor-pointer hover:rounded-lg hover:bg-green-200 transition-all;
+    @apply w-fit text-lg mt-3 px-3 py-1 rounded-md hover:cursor-pointer hover:scale-105 transition-all hover:underline;
   }
 
   .input-auth {
-    @apply border-2 text-gray-500 rounded-sm px-2 py-1;
+    @apply mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none transition duration-300 ease-in-out;
   }
 }
