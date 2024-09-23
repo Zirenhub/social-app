@@ -2,11 +2,11 @@ import PageOne from './signUpPages/PageOne';
 import PageTwo from './signUpPages/PageTwo';
 import { z } from 'zod';
 import { useSignUpForm } from './helpers/useSignUpForm';
-import User from '@shared/validation/userSchema';
+import UserSignUp from '@shared/validation/userSchemas';
 import { useState } from 'react';
 import { FIRST_PAGE_FIELDS } from '../../constants/formConstants';
 
-type TFormInput = z.infer<typeof User>;
+type TFormInput = z.infer<typeof UserSignUp>;
 
 function SignUp() {
   const [page, setPage] = useState<1 | 2>(1);

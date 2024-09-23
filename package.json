@@ -1,15 +1,9 @@
 {
   "name": "warm-up",
-  "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "workspaces": ["client", "server", "shared"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "zod": "^3.23.8"
+    "client": "npm run start --workspace=client",
+    "server": "npm run start --workspace=server"
   }
 }

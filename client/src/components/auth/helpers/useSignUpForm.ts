@@ -3,13 +3,13 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
-import User from '@shared/validation/userSchema';
+import UserSignUp from '@shared/validation/userSchemas';
 
-type TFormInput = z.infer<typeof User>;
+type TFormInput = z.infer<typeof UserSignUp>;
 
 export const useSignUpForm = () => {
   const formMethods = useForm<TFormInput>({
-    resolver: zodResolver(User),
+    resolver: zodResolver(UserSignUp),
     defaultValues: {
       day: new Date().getDate(),
       month: new Date().getMonth(),

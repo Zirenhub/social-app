@@ -24,3 +24,5 @@ export function errorMiddleware(
 
   res.status(status).json(errorResponse);
 }
+
+export default errorMiddleware;

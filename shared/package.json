@@ -1,0 +1,10 @@
+{
+  "name": "@warm-up/shared",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "types": "index.d.ts",
+  "dependencies": {
+    "zod": "^3.21.4"
+  }
+}

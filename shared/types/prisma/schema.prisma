@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../shared/types/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  profile Profile?
+}
+
+model Profile {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  firstName    String
+  lastName     String
+  bio          String?
+  gender       Gender
+  dateOfBirth  DateTime
+  profileImage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  posts            Post[]
+  comments         Comment[]
+  likes            Like[]
+  friendsAdded     Friendship[]    @relation("ProfileFriendsAdded")
+  friendOf         Friendship[]    @relation("ProfileFriendOf")
+  sentRequests     FriendRequest[] @relation("ProfileSentRequests")
+  receivedRequests FriendRequest[] @relation("ProfileReceivedRequests")
+
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([username])
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  content   String
+  imageUrl  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  comments  Comment[]
+  likes     Like[]
+  profile   Profile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+
+  @@index([profileId, createdAt])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+
+  @@index([postId, profileId])
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  post      Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+
+  @@unique([profileId, postId])
+  @@index([postId, profileId])
+}
+
+model Friendship {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  profile   Profile @relation("ProfileFriendsAdded", fields: [profileId], references: [id], onDelete: Cascade)
+  profileId Int
+  friend    Profile @relation("ProfileFriendOf", fields: [friendId], references: [id], onDelete: Cascade)
+  friendId  Int
+
+  @@unique([profileId, friendId])
+  @@index([profileId, friendId])
+}
+
+model FriendRequest {
+  id        Int                 @id @default(autoincrement())
+  status    FriendRequestStatus
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+
+  sender     Profile @relation("ProfileSentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId   Int
+  receiver   Profile @relation("ProfileReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId Int
+
+  @@unique([senderId, receiverId])
+  @@index([senderId, receiverId])
+}
+
+enum FriendRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
