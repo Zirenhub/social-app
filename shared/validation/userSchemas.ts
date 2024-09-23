@@ -63,4 +63,4 @@ const UserLogIn = z.object({
     .max(18, getMaxCharError("Password", 18)),
 });
 
-export { UserSignUp };
+export { UserSignUp, UserLogIn };
