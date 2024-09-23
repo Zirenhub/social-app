@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { HttpException } from "../exceptions/error";
-import { ApiResponse } from "../types/apiResponse";
+import { ApiResponse } from "@shared/index";
 
 export function errorMiddleware(
   error: HttpException | Error,
