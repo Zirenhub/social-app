@@ -128,5 +128,5 @@ enum FriendRequestStatus {
 enum Gender {
   MALE
   FEMALE
-  OTEHR
+  OTHER
 }
