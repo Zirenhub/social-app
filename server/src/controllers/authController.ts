@@ -59,7 +59,10 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
       },
     });
 
-    sendSuccessResponse(res, newUserWithProfile);
+    // delete the hashed password
+    delete newUserWithProfile.passwordHash;
+
+    sendSuccessResponse(res, { ...newUserWithProfile });
   } catch (error) {
     next(error);
   }

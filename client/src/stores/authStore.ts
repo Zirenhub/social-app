@@ -1,31 +1,24 @@
-import create from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from 'zustand';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import z from 'zod';
-import { User, Profile, UserSignUp } from '@shared/index';
+import { User, Profile, UserSignUp, UserLogIn } from '@shared/index';
 import api from '../app/axios';
 
 type TUserSignUp = z.infer<typeof UserSignUp>;
+type TUserLogin = z.infer<typeof UserLogIn>;
 
 // API functions
-const loginApi = (data) => api.post('/auth/login', data);
+const loginApi = (data: TUserLogin) => api.post('/auth/login', data);
 const signupApi = (data: TUserSignUp) => api.post('/auth/signup', data);
 const getUserApi = () => api.get('/user');
 const logoutApi = () => api.post('/logout');
 
-const useAuthStore = create(
-  persist(
-    (set) => ({
-      user: null,
-      isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      logout: () => set({ user: null, isAuthenticated: false }),
-    }),
-    {
-      name: 'auth-storage',
-    }
-  )
-);
+const useAuthStore = create((set) => ({
+  user: null,
+  isAuthenticated: false,
+  setUser: (user) => set({ user, isAuthenticated: !!user }),
+  logout: () => set({ user: null, isAuthenticated: false }),
+}));
 
 // React Query hooks
 export const useLogin = () => {

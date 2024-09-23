@@ -1,5 +1,5 @@
 // prisma.ts
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@shared/index";
 
 const prisma = new PrismaClient();
 
