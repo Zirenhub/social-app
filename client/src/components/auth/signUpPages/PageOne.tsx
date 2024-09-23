@@ -32,9 +32,9 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
       />
       <label>Gender</label>
       <select {...register('gender')} className="input-auth">
-        <option value="female">Female</option>
-        <option value="male">Male</option>
-        <option value="other">Other</option>
+        <option value="FEMALE">Female</option>
+        <option value="MALE">Male</option>
+        <option value="OTHER">Other</option>
       </select>
       <div className="flex justify-between">
         <div className="flex flex-col w-full">

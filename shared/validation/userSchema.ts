@@ -31,7 +31,7 @@ const User = z
       .number()
       .min(1900, "Year is required")
       .max(new Date().getFullYear()),
-    gender: z.enum(["male", "female", "other"], { message: "Invalid gender." }),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"], { message: "Invalid gender." }),
     bio: z.string().trim().max(160, getMaxCharError("Bio", 160)),
     email: z
       .string()
