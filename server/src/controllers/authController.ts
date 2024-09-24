@@ -34,7 +34,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 
     // Hash the password
     const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const dateOfBirth = new Date(year, month, day);
 
@@ -42,7 +42,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
     const newUserWithProfile = await prisma.user.create({
       data: {
         email,
-        passwordHash,
+        passwordHash: hashedPassword,
         profile: {
           create: {
             username,
@@ -60,9 +60,9 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
     });
 
     // delete the hashed password
-    delete newUserWithProfile.passwordHash;
+    const { passwordHash, ...userResponse } = newUserWithProfile;
 
-    sendSuccessResponse(res, { ...newUserWithProfile });
+    sendSuccessResponse(res, userResponse);
   } catch (error) {
     next(error);
   }
