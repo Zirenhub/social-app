@@ -1,4 +1,4 @@
-import { ApiResponse, Profile, User } from '@shared/index';
+import { ApiResponse, Profile, User } from 'shared';
 
 export interface LoginResponse extends ApiResponse<unknown> {
   data: Omit<User, 'passwordHash'> & { profile: Profile };

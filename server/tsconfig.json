@@ -8,10 +8,10 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared": ["../shared/types/prisma"]
     },
     "typeRoots": ["node_modules/@types", "types"]
   },
-  "include": ["src/**/*", "../shared"],
+  "include": ["src/**/*", "../shared/types/prisma"],
   "exclude": ["node_modules"]
 }

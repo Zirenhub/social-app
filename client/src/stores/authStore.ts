@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, Profile } from '@shared/index';
+import { User, Profile } from 'shared';
 import { loginApi, logoutApi, signupApi } from '../api/userApi';
 
 type TUser = Omit<User, 'passwordHash'> & { profile: Profile };

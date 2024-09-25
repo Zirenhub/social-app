@@ -3,7 +3,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
-import UserSignUp from '@shared/validation/userSchemas';
+import { UserSignUp } from 'shared';
 
 type TFormInput = z.infer<typeof UserSignUp>;
 

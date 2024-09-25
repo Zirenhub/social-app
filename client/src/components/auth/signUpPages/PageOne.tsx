@@ -1,7 +1,7 @@
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import { MONTHS } from '../../../constants/formConstants';
-import UserSignUp from '@shared/validation/userSchemas';
+import { UserSignUp } from 'shared';
 
 type TFormInput = z.infer<typeof UserSignUp>;
 

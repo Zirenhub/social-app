@@ -5,9 +5,6 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
-    "paths": {
-      "@shared/*": ["../shared/*"]
-    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -23,5 +20,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "../shared"]
+  "include": ["src"]
 }

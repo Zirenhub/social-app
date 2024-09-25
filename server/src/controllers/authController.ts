@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import prisma from "../prisma";
 import { sendSuccessResponse } from "../utils/responseHandler";
 import { HttpException } from "../exceptions/error";
-import { UserSignUp } from "@shared/validation/userSchemas";
+import { UserSignUp } from "@shared";
 
 const login = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;

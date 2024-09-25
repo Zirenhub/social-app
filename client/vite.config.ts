@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@shared': '../shared',
+      shared: 'shared/index.ts',
     },
   },
 });

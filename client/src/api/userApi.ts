@@ -1,6 +1,6 @@
 import api from '../app/axios';
 import z from 'zod';
-import { UserSignUp, UserLogIn } from '@shared/index';
+import { UserSignUp, UserLogIn } from 'shared';
 import {
   LoginResponse,
   LogOutResponse,
