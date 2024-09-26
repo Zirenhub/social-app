@@ -1,6 +1,6 @@
-// prisma.ts
-import { PrismaClient } from "@shared";
+import { PrismaClient, Prisma } from "@shared";
 
-const prisma = new PrismaClient();
+const client = new PrismaClient();
 
-export default prisma;
+export default client;
+export { Prisma };

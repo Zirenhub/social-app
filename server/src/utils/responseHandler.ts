@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { ApiResponse } from "@shared/index";
+import { ApiResponse } from "@shared";
 
 export function sendSuccessResponse<T>(
   res: Response,
