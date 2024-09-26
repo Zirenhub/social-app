@@ -11,10 +11,10 @@ type TUserSignUp = z.infer<typeof UserSignUp>;
 type TUserLogin = z.infer<typeof UserLogIn>;
 
 // API functions
-const loginApi = (data: TUserLogin) =>
-  api.post<LoginResponse>('/auth/login', data);
-const signupApi = (data: TUserSignUp) =>
-  api.post<SignUpResponse>('/auth/signup', data);
-const logoutApi = () => api.post<LogOutResponse>('/logout');
+const loginApi = async (data: TUserLogin) =>
+  await api.post<LoginResponse>('auth/login', data);
+const signupApi = async (data: TUserSignUp) =>
+  await api.post<SignUpResponse>('auth/signup', data);
+const logoutApi = async () => await api.post<LogOutResponse>('auth/logout');
 
 export { loginApi, signupApi, logoutApi };
