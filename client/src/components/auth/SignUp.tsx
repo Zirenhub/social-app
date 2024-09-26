@@ -11,15 +11,8 @@ type TFormInput = z.infer<typeof UserSignUp>;
 function SignUp() {
   const [page, setPage] = useState<1 | 2>(1);
 
-  const {
-    formMethods,
-    displayErrors,
-    onSubmit,
-    getDayOptions,
-    getYearOptions,
-  } = useSignUpForm();
-
-  const { handleSubmit } = formMethods;
+  const { formMethods, displayErrors, getDayOptions, submit, getYearOptions } =
+    useSignUpForm();
 
   const nextPage = async () => {
     // validate only fields that exist on first page of the signup process
@@ -41,7 +34,7 @@ function SignUp() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+    <form onSubmit={submit} className="flex flex-col">
       {page === 1 ? (
         <>
           <PageOne
@@ -64,7 +57,7 @@ function SignUp() {
             <button type="button" onClick={prevPage} className="btn-auth">
               Back
             </button>
-            <input type="submit" className="btn-submit" />
+            <input type="submit" className="btn-submit" value={'Sign Up'} />
           </div>
         </>
       )}

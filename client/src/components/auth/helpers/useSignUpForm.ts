@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 import { UserSignUp } from 'shared';
+import { useSignUp } from '../../../stores/authStore';
 
 type TFormInput = z.infer<typeof UserSignUp>;
 
@@ -20,6 +21,7 @@ export const useSignUpForm = () => {
   const {
     formState: { errors },
     watch,
+    handleSubmit,
   } = formMethods;
 
   const selectedMonth = watch('month');
@@ -36,10 +38,17 @@ export const useSignUpForm = () => {
     displayErrors();
   }, [errors, displayErrors]);
 
-  const onSubmit: SubmitHandler<TFormInput> = (data) => {
-    console.log('Form submitted', data);
-    toast.success('Sign up successful!');
+  const { mutate: signUp, error } = useSignUp();
+
+  const onSubmit: SubmitHandler<TFormInput> = (formData) => {
+    signUp(formData);
+    if (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
   };
+
+  const submit = handleSubmit(onSubmit);
 
   function daysInMonth(month: number, year: number) {
     return new Date(year, month + 1, 0).getDate();
@@ -63,6 +72,7 @@ export const useSignUpForm = () => {
     formMethods,
     onSubmit,
     getDayOptions,
+    submit,
     displayErrors,
     getYearOptions,
   };
