@@ -41,7 +41,7 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
           <label>Day</label>
           <select
             {...register('day', { setValueAs: (value) => Number(value) })}
-            className="text-gray-500 input-auth"
+            className="text-gray-500 input-auth w-3/4 self-center text-center"
           >
             {getDayOptions().map((day) => (
               <option key={day} value={day}>
@@ -54,7 +54,7 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
           <label>Month</label>
           <select
             {...register('month', { setValueAs: (value) => Number(value) })}
-            className="text-gray-500 input-auth"
+            className="text-gray-500 input-auth w-3/4 self-center text-center"
           >
             {MONTHS.map((month, index) => (
               <option key={month} value={index}>
@@ -67,7 +67,7 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
           <label>Year</label>
           <select
             {...register('year', { setValueAs: (value) => Number(value) })}
-            className="text-gray-500 input-auth"
+            className="text-gray-500 input-auth w-3/4 self-center text-center"
           >
             {getYearOptions().map((year) => (
               <option key={year} value={year}>
