@@ -9,7 +9,7 @@ const app: Application = express();
 
 // Middleware
 app.use(morgan("dev")); // Logger
-app.use(cors()); // Enable CORS
+app.use(cors({ origin: process.env.FRONT_END, credentials: true })); // Enable CORS
 app.use(express.json()); // Parse JSON payloads
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded payloads
 app.use(cookieParser()); // Put JWT in user's cookie
