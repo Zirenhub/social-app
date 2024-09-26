@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
-import prisma from "../prisma";
+import client from "../prisma";
 import { sendSuccessResponse } from "../utils/responseHandler";
 import { HttpException } from "../exceptions/error";
 import { UserSignUp } from "@shared";
+import { HttpStatusCode } from "../constants/constant";
 
 const login = (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
@@ -18,20 +19,22 @@ const login = (req: Request, res: Response, next: NextFunction) => {
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const day = Number(req.body.day);
+    const month = Number(req.body.month);
+    const year = Number(req.body.year);
+    if (isNaN(day) || isNaN(month) || isNaN(year)) {
+      throw new HttpException(
+        HttpStatusCode.BAD_REQUEST,
+        "Day, Month, Year must be number."
+      );
+    }
+    req.body.day = day;
+    req.body.month = month;
+    req.body.year = year;
     const validatedData = UserSignUp.parse(req.body);
-    const {
-      username,
-      firstName,
-      lastName,
-      bio,
-      gender,
-      day,
-      month,
-      year,
-      email,
-      password,
-    } = validatedData;
 
+    const { username, firstName, lastName, bio, gender, email, password } =
+      validatedData;
     // Hash the password
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -39,7 +42,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
     const dateOfBirth = new Date(year, month, day);
 
     // Save the user in the database
-    const newUserWithProfile = await prisma.user.create({
+    const newUserWithProfile = await client.user.create({
       data: {
         email,
         passwordHash: hashedPassword,
@@ -61,7 +64,6 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 
     // delete the hashed password
     const { passwordHash, ...userResponse } = newUserWithProfile;
-
     sendSuccessResponse(res, userResponse);
   } catch (error) {
     next(error);
