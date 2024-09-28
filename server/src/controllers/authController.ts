@@ -19,19 +19,13 @@ const login = (req: Request, res: Response, next: NextFunction) => {
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const day = Number(req.body.day);
-    const month = Number(req.body.month);
-    const year = Number(req.body.year);
-    if (isNaN(day) || isNaN(month) || isNaN(year)) {
-      throw new HttpException(
-        HttpStatusCode.BAD_REQUEST,
-        "Day, Month, Year must be number."
-      );
-    }
-    req.body.day = day;
-    req.body.month = month;
-    req.body.year = year;
-    const validatedData = UserSignUp.parse(req.body);
+    const validatedData = UserSignUp.parse({
+      ...req.body,
+      day: Number(req.body.day),
+      month: Number(req.body.month),
+      year: Number(req.body.year),
+      username: req.body.username.toLowerCase(),
+    });
 
     const { username, firstName, lastName, bio, gender, email, password } =
       validatedData;
@@ -39,7 +33,11 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const dateOfBirth = new Date(year, month, day);
+    const dateOfBirth = new Date(
+      validatedData.year,
+      validatedData.month,
+      validatedData.day
+    );
 
     // Save the user in the database
     const newUserWithProfile = await client.user.create({
