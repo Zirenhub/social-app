@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { User, Profile } from 'shared';
-import { loginApi, logoutApi, signupApi } from '../api/userApi';
+import { logInApi, logoutApi, signupApi } from '../api/userApi';
 import { ApiError } from '../api/error';
 
 type TUser = Omit<User, 'passwordHash'> & { profile: Profile };
@@ -26,10 +26,14 @@ export const useLogin = () => {
   const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
-    mutationFn: loginApi,
+    mutationFn: logInApi,
     onSuccess: (response) => {
+      console.log(response);
       setUser(response.data);
       queryClient.setQueryData(['user'], response.data);
+    },
+    onError: (err: ApiError) => {
+      console.log(err);
     },
   });
 };
@@ -44,7 +48,9 @@ export const useSignUp = () => {
       setUser(response.data);
       queryClient.setQueryData(['user'], response.data);
     },
-    onError: (err: ApiError) => {},
+    onError: (err: ApiError) => {
+      console.log(err);
+    },
   });
 };
 
