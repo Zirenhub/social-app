@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
@@ -7,6 +7,8 @@ import { UserSignUp } from 'shared';
 import { useSignUp } from '../../../stores/authStore';
 
 type TFormInput = z.infer<typeof UserSignUp>;
+type TUniqueFields = 'email' | 'username';
+type TConflict = { field: TUniqueFields; value: string };
 
 export const useSignUpForm = () => {
   const formMethods = useForm<TFormInput>({
@@ -17,38 +19,71 @@ export const useSignUpForm = () => {
       year: new Date().getFullYear(),
     },
   });
+  // tried adopting this custom conflict to formMethods, could not do it, a bunc of sync mess, maybe in the future
+  const [conflict, setConflict] = useState<TConflict | null>(null);
 
   const {
     formState: { errors },
     watch,
     handleSubmit,
+    getValues,
   } = formMethods;
 
   const selectedMonth = watch('month');
   const selectedYear = watch('year');
 
-  const displayErrors = useCallback(() => {
-    const errorMessages = Object.values(errors).map((error) => error?.message);
-    errorMessages.forEach((message) => {
-      if (message) toast.error(message, { toastId: message });
-    });
-  }, [errors]);
+  const { mutate: signUp, error, isSuccess } = useSignUp();
+
+  const isConflictResolved = () => {
+    if (conflict) {
+      const currentFieldVal = formMethods.getValues(conflict.field);
+      if (currentFieldVal !== conflict.value) {
+        setConflict(null);
+        // setState is asynchronous thus cant use conflict in below submit, lazy fix
+        return true;
+      }
+    }
+    return false;
+  };
 
   useEffect(() => {
-    displayErrors();
-  }, [errors, displayErrors]);
+    const registerConflict = (conflictField: TUniqueFields) => {
+      const fieldVal = getValues(conflictField);
+      setConflict({
+        field: conflictField,
+        value: fieldVal,
+      });
+      alreadyExistsAlert(conflictField);
+    };
 
-  const { mutate: signUp, error } = useSignUp();
-
-  const onSubmit: SubmitHandler<TFormInput> = (formData) => {
-    signUp(formData);
     if (error) {
-      console.log(error);
-      toast.error(error.message);
+      if (error.status === 409 && error.details?.field) {
+        console.log('error caught, registering');
+        registerConflict(error.details.field[0] as TUniqueFields);
+      } else {
+        toast.error(error.message);
+      }
+    }
+  }, [error, getValues]);
+
+  const onSubmit: SubmitHandler<TFormInput> = async (formData) => {
+    if (!conflict) {
+      signUp(formData);
+    } else {
+      const isResolved = isConflictResolved();
+      if (isResolved) {
+        signUp(formData);
+      } else {
+        alreadyExistsAlert(conflict.field);
+      }
     }
   };
 
   const submit = handleSubmit(onSubmit);
+
+  const alreadyExistsAlert = (field: string) => {
+    toast.error(`${field} already exists.`, { autoClose: 10000 });
+  };
 
   function daysInMonth(month: number, year: number) {
     return new Date(year, month + 1, 0).getDate();
@@ -73,7 +108,8 @@ export const useSignUpForm = () => {
     onSubmit,
     getDayOptions,
     submit,
-    displayErrors,
+    isSuccess,
     getYearOptions,
+    formErrors: errors,
   };
 };

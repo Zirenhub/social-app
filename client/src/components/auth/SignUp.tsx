@@ -3,25 +3,50 @@ import PageTwo from './signUpPages/PageTwo';
 import { z } from 'zod';
 import { useSignUpForm } from './helpers/useSignUpForm';
 import { UserSignUp } from 'shared';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FIRST_PAGE_FIELDS } from '../../constants/formConstants';
+import { toast } from 'react-toastify';
 
 type TFormInput = z.infer<typeof UserSignUp>;
 
 function SignUp() {
   const [page, setPage] = useState<1 | 2>(1);
 
-  const { formMethods, displayErrors, getDayOptions, submit, getYearOptions } =
-    useSignUpForm();
+  const {
+    formMethods,
+    getDayOptions,
+    submit,
+    getYearOptions,
+    formErrors,
+    isSuccess,
+  } = useSignUpForm();
+
+  const notifyFormErrors = useCallback(() => {
+    const errorMessages = Object.values(formErrors).map(
+      (error) => error?.message
+    );
+    errorMessages.forEach((message) => {
+      if (message) toast.error(message, { toastId: message });
+    });
+  }, [formErrors]);
+
+  useEffect(() => {
+    notifyFormErrors();
+  }, [formErrors, notifyFormErrors]);
+
+  useEffect(() => {
+    if (isSuccess) toast.success('Signed up successfuly!');
+  }, [isSuccess]);
 
   const nextPage = async () => {
     // validate only fields that exist on first page of the signup process
     // feels tacky and should be fixed later
     const isValid = await formMethods.trigger(FIRST_PAGE_FIELDS);
+    console.log(isValid);
     if (isValid) {
       setPage(2);
     } else {
-      displayErrors();
+      notifyFormErrors();
     }
   };
 
