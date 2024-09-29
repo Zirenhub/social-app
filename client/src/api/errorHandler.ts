@@ -9,7 +9,7 @@ export const errorHandler = <T, R>(apiFunction: ApiFunction<T, R>) => {
     try {
       const response = await apiFunction(data);
       if (response.data.success) {
-        return response.data as R;
+        return response.data.data as R;
       } else {
         throw new ApiError(
           response.data.error?.message || 'Unknown error',
