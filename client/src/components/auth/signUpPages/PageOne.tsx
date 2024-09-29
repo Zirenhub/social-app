@@ -23,10 +23,18 @@ function PageOne({ formMethods, getDayOptions, getYearOptions }: Props) {
       <label>Email</label>
       <input {...register('email')} className="input-auth" />
       <label>Password</label>
-      <input {...register('password')} className="input-auth" type="password" />
+      <input
+        {...register('password')}
+        // without this autocomplete, if password gets filled
+        // zod validations on password wont work
+        autoComplete="new-password"
+        className="input-auth"
+        type="password"
+      />
       <label>Confirm Password</label>
       <input
         {...register('confirmPassword')}
+        autoComplete="new-password"
         className="input-auth"
         type="password"
       />
