@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import client from "../prisma";
+import jwt from "jsonwebtoken";
 import { sendSuccessResponse } from "../utils/responseHandler";
 import { UserSignUp, UserLogIn } from "@shared";
+import { HttpException } from "../exceptions/error";
+import { APP_ERROR_MESSAGE, HTTP_RESPONSE_CODE } from "../constants/constant";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -10,9 +13,25 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     const user = await client.user.findUniqueOrThrow({
       where: { email },
       include: { profile: true },
-      omit: { passwordHash: true },
     });
-    sendSuccessResponse(res, user);
+    // omit the password
+
+    const match = await bcrypt.compare(password, user.passwordHash);
+    if (match) {
+      const token = jwt.sign(user, process.env.SECRET!, { expiresIn: "1h" });
+      res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        secure: true,
+      });
+
+      sendSuccessResponse(res, user);
+    } else {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        APP_ERROR_MESSAGE.invalidCredentials
+      );
+    }
   } catch (err) {
     next(err);
   }
