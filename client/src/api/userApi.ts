@@ -8,19 +8,19 @@ import {
 } from '../types/api/auth';
 import { errorHandler } from './errorHandler';
 
-type TUserSignUp = z.infer<typeof UserSignUp>;
-type TUserLogin = z.infer<typeof UserLogIn>;
+type TLogInData = z.infer<typeof UserLogIn>;
+type TSignUpData = z.infer<typeof UserSignUp>;
 
 // API functions
-const loginApi = async (loginData: TUserLogin) => {
-  const response = await api.post<LoginResponse>('auth/login', loginData);
-  return response.data;
-};
+const logInApiBase = (data: TLogInData) =>
+  api.post<ApiResponse<LoginResponse>>('auth/login', data);
 
-const signupApiBase = (data: TUserSignUp) =>
+const signupApiBase = (data: TSignUpData) =>
   api.post<ApiResponse<SignUpResponse>>('auth/signup', data);
+
+const logInApi = errorHandler(logInApiBase);
 const signupApi = errorHandler(signupApiBase);
 
 const logoutApi = async () => await api.post<LogOutResponse>('auth/logout');
 
-export { loginApi, signupApi, logoutApi };
+export { logInApi, signupApi, logoutApi };
