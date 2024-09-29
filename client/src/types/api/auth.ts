@@ -1,11 +1,11 @@
-import { ApiResponse, Profile, User } from 'shared';
+import { ApiResponse, TAuthUser } from 'shared';
 
 export interface LoginResponse extends ApiResponse<unknown> {
-  data: Omit<User, 'passwordHash'> & { profile: Profile };
+  data: TAuthUser;
 }
 
 export interface SignUpResponse extends ApiResponse<unknown> {
-  data: Omit<User, 'passwordHash'> & { profile: Profile };
+  data: TAuthUser;
 }
 
 export interface LogOutResponse extends ApiResponse<unknown> {

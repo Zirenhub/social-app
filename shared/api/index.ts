@@ -1,3 +1,6 @@
 import type { ApiResponse } from "./apiResponse";
+import { User, Profile } from "../types";
 
-export { ApiResponse };
+type TAuthUser = Omit<User, "passwordHash"> & { profile: Profile };
+
+export { ApiResponse, TAuthUser };
