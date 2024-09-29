@@ -2,16 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import client from "../prisma";
 import { sendSuccessResponse } from "../utils/responseHandler";
-import { HttpException } from "../exceptions/error";
-import { UserSignUp } from "@shared";
-import { HttpStatusCode } from "../constants/constant";
+import { UserSignUp, UserLogIn } from "@shared";
 
-const login = (req: Request, res: Response, next: NextFunction) => {
-  const { email, password } = req.body;
+const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (email && password) {
-      res.status(200).json({ message: "success" });
-    }
+    const { email, password } = UserLogIn.parse(req.body);
+    const user = await client.user.findUniqueOrThrow({
+      where: { email },
+      include: { profile: true },
+      omit: { passwordHash: true },
+    });
+    sendSuccessResponse(res, user);
   } catch (err) {
     next(err);
   }
@@ -58,11 +59,11 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
       include: {
         profile: true, // Include profile data in the response
       },
+      omit: { passwordHash: true },
     });
 
     // delete the hashed password
-    const { passwordHash, ...userResponse } = newUserWithProfile;
-    sendSuccessResponse(res, userResponse);
+    sendSuccessResponse(res, newUserWithProfile);
   } catch (error) {
     next(error);
   }
