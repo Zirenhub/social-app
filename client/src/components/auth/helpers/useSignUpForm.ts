@@ -32,7 +32,7 @@ export const useSignUpForm = () => {
   const selectedMonth = watch('month');
   const selectedYear = watch('year');
 
-  const { mutate: signUp, error, isSuccess } = useSignUp();
+  const { mutate: signUp, error } = useSignUp();
 
   const isConflictResolved = () => {
     if (conflict) {
@@ -58,7 +58,7 @@ export const useSignUpForm = () => {
 
     if (error) {
       if (error.status === 409 && error.details?.field) {
-        console.log('error caught, registering');
+        // conflict error, field will point to the filed that is conflicting
         registerConflict(error.details.field[0] as TUniqueFields);
       } else {
         toast.error(error.message);
@@ -105,10 +105,8 @@ export const useSignUpForm = () => {
 
   return {
     formMethods,
-    onSubmit,
     getDayOptions,
     submit,
-    isSuccess,
     getYearOptions,
     formErrors: errors,
   };

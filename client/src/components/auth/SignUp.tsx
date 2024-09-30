@@ -12,14 +12,8 @@ type TFormInput = z.infer<typeof UserSignUp>;
 function SignUp() {
   const [page, setPage] = useState<1 | 2>(1);
 
-  const {
-    formMethods,
-    getDayOptions,
-    submit,
-    getYearOptions,
-    formErrors,
-    isSuccess,
-  } = useSignUpForm();
+  const { formMethods, getDayOptions, submit, getYearOptions, formErrors } =
+    useSignUpForm();
 
   const notifyFormErrors = useCallback(() => {
     const errorMessages = Object.values(formErrors).map(
@@ -34,15 +28,10 @@ function SignUp() {
     notifyFormErrors();
   }, [formErrors, notifyFormErrors]);
 
-  useEffect(() => {
-    if (isSuccess) toast.success('Signed up successfuly!');
-  }, [isSuccess]);
-
   const nextPage = async () => {
     // validate only fields that exist on first page of the signup process
     // feels tacky and should be fixed later
     const isValid = await formMethods.trigger(FIRST_PAGE_FIELDS);
-    console.log(isValid);
     if (isValid) {
       setPage(2);
     } else {
