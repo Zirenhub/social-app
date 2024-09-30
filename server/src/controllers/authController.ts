@@ -14,18 +14,20 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       where: { email },
       include: { profile: true },
     });
-    // omit the password
+    const { passwordHash, ...userWithoutPassword } = user;
 
-    const match = await bcrypt.compare(password, user.passwordHash);
+    const match = await bcrypt.compare(password, passwordHash);
     if (match) {
-      const token = jwt.sign(user, process.env.SECRET!, { expiresIn: "1h" });
+      const token = jwt.sign(userWithoutPassword, process.env.SECRET!, {
+        expiresIn: "1h",
+      });
       res.cookie("token", token, {
         httpOnly: true,
         sameSite: "strict",
         secure: true,
       });
 
-      sendSuccessResponse(res, user);
+      sendSuccessResponse(res, userWithoutPassword);
     } else {
       throw new HttpException(
         HTTP_RESPONSE_CODE.UNAUTHORIZED,
@@ -81,11 +83,34 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
       omit: { passwordHash: true },
     });
 
-    // delete the hashed password
+    const token = jwt.sign(newUserWithProfile, process.env.SECRET!, {
+      expiresIn: "1h",
+    });
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
+
     sendSuccessResponse(res, newUserWithProfile);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
 };
 
-export default { login, signup };
+const whoami = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (req.user) {
+      sendSuccessResponse(res, req.user);
+    } else {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        APP_ERROR_MESSAGE.serverError
+      );
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default { login, signup, whoami };
