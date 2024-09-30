@@ -1,36 +1,38 @@
 import { create } from 'zustand';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, Profile } from 'shared';
+import { TAuthUser } from 'shared';
 import { logInApi, logoutApi, signupApi } from '../api/userApi';
 import { ApiError } from '../api/error';
 
-type TUser = Omit<User, 'passwordHash'> & { profile: Profile };
+import { devtools } from 'zustand/middleware';
 
 type TAuthState = {
-  user: TUser | null;
+  user: TAuthUser | null;
   isAuthenticated: boolean;
-  setUser: (user: TUser) => void;
+  setUser: (user: TAuthUser) => void;
   logout: () => void;
 };
 
-const useAuthStore = create<TAuthState>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  setUser: (user: TUser) => set({ user, isAuthenticated: !!user }),
-  logout: () => set({ user: null, isAuthenticated: false }),
-}));
+const useAuthStore = create<TAuthState>()(
+  devtools((set) => ({
+    user: null,
+    isAuthenticated: false,
+    setUser: (user: TAuthUser) => set({ user, isAuthenticated: true }),
+    logout: () => set({ user: null, isAuthenticated: false }),
+  }))
+);
 
 // React Query hooks
+
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: logInApi,
-    onSuccess: (response) => {
-      console.log(response);
-      setUser(response.data);
-      queryClient.setQueryData(['user'], response.data);
+    onSuccess: (data) => {
+      setUser(data);
+      queryClient.setQueryData(['user'], data);
     },
     onError: (err: ApiError) => {
       console.log(err);
@@ -44,9 +46,9 @@ export const useSignUp = () => {
 
   return useMutation({
     mutationFn: signupApi,
-    onSuccess: (response) => {
-      setUser(response.data);
-      queryClient.setQueryData(['user'], response.data);
+    onSuccess: (data) => {
+      setUser(data);
+      queryClient.setQueryData(['user'], data);
     },
     onError: (err: ApiError) => {
       console.log(err);
@@ -66,20 +68,5 @@ export const useLogout = () => {
     },
   });
 };
-
-// export const useUser = () => {
-//   const setUser = useAuthStore((state) => state.setUser);
-
-//   return useQuery({ queryKey: ['user'] }, getUserApi, {
-//     onSuccess: (data) => {
-//       setUser(data.data);
-//     },
-//     onError: () => {
-//       setUser(null);
-//     },
-//     retry: false,
-//     refetchOnWindowFocus: false,
-//   });
-// };
 
 export default useAuthStore;
