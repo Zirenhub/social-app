@@ -10,7 +10,7 @@
     "paths": {
       "@shared": ["../shared/serverIndex.ts"]
     },
-    "typeRoots": ["node_modules/@types", "types"]
+    "typeRoots": ["./src/types", "./node_modules/@types"]
   },
   "include": ["src/**/*", "../shared/serverIndex.ts"],
   "exclude": ["node_modules"]
