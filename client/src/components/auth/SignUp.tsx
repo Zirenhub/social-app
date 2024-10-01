@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { useSignUpForm } from './helpers/useSignUpForm';
 import { UserSignUp } from 'shared';
 import { useCallback, useEffect, useState } from 'react';
-import { FIRST_PAGE_FIELDS } from '../../constants/formConstants';
+import { FIRST_PAGE_FIELDS } from '../../constants/constants';
 import { toast } from 'react-toastify';
 
 type TFormInput = z.infer<typeof UserSignUp>;
