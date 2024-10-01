@@ -21,17 +21,35 @@
   src: url('../assets/fonts/thin.otf');
 }
 
+.animated-background {
+  background-size: 400%;
+
+  -webkit-animation: animation 3s ease infinite;
+  -moz-animation: animation 3s ease infinite;
+  animation: animation 3s ease infinite;
+}
+
 @layer base {
   body {
     @apply m-0;
     @apply p-0;
     @apply box-border;
     @apply font-regular;
+    @apply min-h-screen;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html {
-    /* font-family: 'styrene', system-ui, sans-serif; */
-    /* font-family: url(/client/src/assets/fonts/StyreneB.otf) format('otf'); */
+    @apply leading-normal;
+    @apply scroll-smooth;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  #root {
+    @apply flex;
+    @apply min-h-screen;
   }
 
   *,
@@ -41,6 +59,22 @@
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  @keyframes animation {
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  ul,
+  ol {
+    @apply list-none;
   }
 }
 
