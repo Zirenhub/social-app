@@ -1,21 +1,29 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
-import useAuthStore from '../../stores/authStore';
+import { useEffect, useState } from 'react';
+import useAuthStore, { useLogout } from '../../stores/authStore';
 import {
   modalVariants,
   slideAboveVariants,
   slideLeftVariants,
 } from '../../constants/constants';
+import { toast } from 'react-toastify';
 
 const Layout = () => {
   const [userOptionsModal, setUserOptionsModal] = useState<boolean>(false);
   const user = useAuthStore((state) => state.user);
+
   const location = useLocation();
   const navLinks = [
     { value: 'Home', to: '/' },
     { value: 'Profile', to: 'profile' },
   ];
+
+  const { mutate: logout, error } = useLogout();
+
+  useEffect(() => {
+    if (error) toast.error(error.message);
+  }, [error]);
 
   return (
     <motion.div
@@ -54,10 +62,10 @@ const Layout = () => {
                 className="-top-[15%] left-1/2 -translate-x-1/2 -translate-y-1/2 absolute py-1 px-3 bg-black rounded-lg z-10"
               >
                 <button
-                  className="text-white font-bold"
+                  className="text-white font-bold hover:underline underline-offset-4 hover:text-slate-200"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setUserOptionsModal(false);
+                    logout({});
                   }}
                 >
                   Log Out @{user?.profile.username}

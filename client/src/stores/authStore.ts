@@ -66,6 +66,9 @@ export const useLogout = () => {
       logout();
       queryClient.clear();
     },
+    onError: (err: ApiError) => {
+      console.log(err);
+    },
   });
 };
 

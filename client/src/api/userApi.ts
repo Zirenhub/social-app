@@ -1,7 +1,6 @@
 import api from '../app/axios';
 import z from 'zod';
 import { UserSignUp, UserLogIn, ApiResponse, TAuthUser } from 'shared';
-import { LogOutResponse } from '../types/api/auth';
 import { errorHandler } from './errorHandler';
 
 type TLogInData = z.infer<typeof UserLogIn>;
@@ -16,10 +15,11 @@ const logInApiBase = (data: TLogInData) =>
 const signupApiBase = (data: TSignUpData) =>
   api.post<ApiResponse<TAuthUser>>('auth/signup', data);
 
+const logoutApiBase = () => api.post<ApiResponse<null>>('auth/logout');
+
 const whoAmiApi = errorHandler(whoAmIBase);
 const logInApi = errorHandler(logInApiBase);
 const signupApi = errorHandler(signupApiBase);
-
-const logoutApi = async () => await api.post<LogOutResponse>('auth/logout');
+const logoutApi = errorHandler(logoutApiBase);
 
 export { whoAmiApi, logInApi, signupApi, logoutApi };

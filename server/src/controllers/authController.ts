@@ -113,4 +113,14 @@ const whoami = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { login, signup, whoami };
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.clearCookie("token");
+    sendSuccessResponse(res, null);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+export default { login, signup, whoami, logout };
