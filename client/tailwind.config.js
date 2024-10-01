@@ -9,8 +9,14 @@ export default {
     },
     extend: {
       backgroundImage: {
-        'default-pfp': "url('/public/default_pfp.jpg')",
-        ellipsis: "url('/public/ellipsis.svg')",
+        'default-pfp': "url('/default_pfp.jpg')",
+        ellipsis: "url('/ellipsis.svg')",
+      },
+      colors: {
+        primary: '#FFF0D1',
+        secondary: '#795757',
+        third: '#664343',
+        fourth: '#3B3030',
       },
     },
   },
