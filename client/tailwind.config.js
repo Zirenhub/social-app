@@ -7,7 +7,12 @@ export default {
       bold: ['bold', 'Sans-serif'],
       thin: ['thin', 'Sans-serif'],
     },
-    extend: {},
+    extend: {
+      backgroundImage: {
+        'default-pfp': "url('/public/default_pfp.jpg')",
+        ellipsis: "url('/public/ellipsis.svg')",
+      },
+    },
   },
   plugins: [],
 };
