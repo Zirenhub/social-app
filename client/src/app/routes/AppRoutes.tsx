@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import AuthWrapper from './wrapper/AuthWrapper';
 import Layout from '../../components/layout/Layout';
 import Home from '../pages/home/Home';
+import Profile from '../pages/profile/Profile';
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,7 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <div>Testing</div>,
+                element: <Profile />,
               },
               // {
               //   path: 'settings',
