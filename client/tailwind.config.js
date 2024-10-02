@@ -11,6 +11,8 @@ export default {
       backgroundImage: {
         'default-pfp': "url('/default_pfp.jpg')",
         ellipsis: "url('/ellipsis.svg')",
+        home: 'url(/home.svg)',
+        profile: 'url(/profile.svg)',
       },
       colors: {
         primary: '#FFF0D1',
