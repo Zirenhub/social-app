@@ -24,7 +24,12 @@ function CreatePostModal({ close }: Props) {
     resolver: zodResolver(ZPost),
   });
 
-  const { mutate: createPost, error } = useCreatePost(close);
+  const notifyPostCreated = () => {
+    toast.success('Successfully created post!');
+    close();
+  };
+
+  const { mutate: createPost, error } = useCreatePost(notifyPostCreated);
 
   const onSubmit: SubmitHandler<TFormInput> = (data) => {
     createPost(data);

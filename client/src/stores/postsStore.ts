@@ -18,7 +18,7 @@ const usePostsStore = create<TPostsStore>()(
   }))
 );
 
-export const useCreatePost = (close: () => void) => {
+export const useCreatePost = (success: () => void) => {
   const queryClient = useQueryClient();
   const addPost = usePostsStore((state) => state.addPost);
 
@@ -27,7 +27,7 @@ export const useCreatePost = (close: () => void) => {
     onSuccess: (data) => {
       addPost(data);
       queryClient.setQueryData(['posts'], data);
-      close();
+      success();
     },
     onError: (err: ApiError) => {
       console.log(err);
