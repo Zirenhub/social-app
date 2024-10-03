@@ -3,6 +3,17 @@ import { Request, Response, NextFunction } from "express";
 import client from "../prisma";
 import { sendSuccessResponse } from "../utils/responseHandler";
 
+const getAll = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const all = await client.post.findMany({
+      include: { profile: { omit: { userId: true } } },
+    });
+    sendSuccessResponse(res, all);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validatedData = ZPost.parse(req.body);
@@ -14,9 +25,8 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     });
     sendSuccessResponse(res, newPost);
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };
 
-export default { create };
+export default { create, getAll };
