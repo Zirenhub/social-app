@@ -9,7 +9,7 @@ const AuthWrapper = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const setUser = useAuthStore((state) => state.setUser);
 
-  const { data, error } = useQuery({
+  const { data, isPending, error } = useQuery({
     queryKey: ['whoami'],
     queryFn: whoAmiApi,
     retry: false, // Default is retry for 3 times if getting error from server
@@ -20,7 +20,11 @@ const AuthWrapper = () => {
     if (data) {
       setUser(data);
     }
-  }, [data, error, setUser]);
+  }, [data, setUser]);
+
+  if (isPending) {
+    return <div>Loading!</div>;
+  }
 
   if (!isAuthenticated) {
     return <Auth />;
