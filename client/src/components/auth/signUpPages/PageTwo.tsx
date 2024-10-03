@@ -1,11 +1,8 @@
 import { UseFormReturn } from 'react-hook-form';
-import { z } from 'zod';
-import { UserSignUp } from 'shared';
-
-type TFormInput = z.infer<typeof UserSignUp>;
+import { TSignUpData } from '../../../types/user';
 
 type Props = {
-  formMethods: UseFormReturn<TFormInput>;
+  formMethods: UseFormReturn<TSignUpData>;
 };
 
 function PageTwo({ formMethods }: Props) {

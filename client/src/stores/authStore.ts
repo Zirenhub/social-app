@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { TAuthUser } from 'shared';
 import { logInApi, logoutApi, signupApi } from '../api/userApi';
 import { ApiError } from '../api/error';
-
 import { devtools } from 'zustand/middleware';
 
 type TAuthStore = {

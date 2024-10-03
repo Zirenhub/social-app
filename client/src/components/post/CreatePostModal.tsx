@@ -2,25 +2,24 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { scaleVariants } from '../../constants/constants';
 import ProfilePicture from '../profile/ProfilePicture';
 import { motion } from 'framer-motion';
-import { z } from 'zod';
 import { ZPost, postContentMaxLength } from 'shared';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreatePost } from '../../stores/postsStore';
 import { useEffect } from 'react';
 import toastFormErrors from '../../utils/toastFormErrors';
 import { toast } from 'react-toastify';
+import { TPost } from '../../types/post';
 
 type Props = {
   close: () => void;
 };
-type TFormInput = z.infer<typeof ZPost>;
 
 function CreatePostModal({ close }: Props) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TFormInput>({
+  } = useForm<TPost>({
     resolver: zodResolver(ZPost),
   });
 
@@ -31,7 +30,7 @@ function CreatePostModal({ close }: Props) {
 
   const { mutate: createPost, error } = useCreatePost(notifyPostCreated);
 
-  const onSubmit: SubmitHandler<TFormInput> = (data) => {
+  const onSubmit: SubmitHandler<TPost> = (data) => {
     createPost(data);
   };
 

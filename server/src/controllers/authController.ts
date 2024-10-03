@@ -3,13 +3,13 @@ import bcrypt from "bcrypt";
 import client from "../prisma";
 import jwt from "jsonwebtoken";
 import { sendSuccessResponse } from "../utils/responseHandler";
-import { UserSignUp, UserLogIn } from "@shared";
+import { ZUserSignUp, ZUserLogIn } from "@shared";
 import { HttpException } from "../exceptions/error";
 import { APP_ERROR_MESSAGE, HTTP_RESPONSE_CODE } from "../constants/constant";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { email, password } = UserLogIn.parse(req.body);
+    const { email, password } = ZUserLogIn.parse(req.body);
     const user = await client.user.findUniqueOrThrow({
       where: { email },
       include: { profile: true },
@@ -41,7 +41,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 const signup = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const validatedData = UserSignUp.parse({
+    const validatedData = ZUserSignUp.parse({
       ...req.body,
       day: Number(req.body.day),
       month: Number(req.body.month),

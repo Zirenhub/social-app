@@ -1,10 +1,7 @@
 import api from '../app/axios';
-import z from 'zod';
-import { UserSignUp, UserLogIn, ApiResponse, TAuthUser } from 'shared';
+import { ApiResponse, TAuthUser } from 'shared';
 import { errorHandler } from './errorHandler';
-
-type TLogInData = z.infer<typeof UserLogIn>;
-type TSignUpData = z.infer<typeof UserSignUp>;
+import { TLogInData, TSignUpData } from '../types/user';
 
 // API functions
 const whoAmIBase = () => api.get<ApiResponse<TAuthUser>>('auth/whoami');

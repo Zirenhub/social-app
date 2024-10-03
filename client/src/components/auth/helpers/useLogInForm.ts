@@ -1,15 +1,13 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLogin } from '../../../stores/authStore';
-import { UserLogIn } from 'shared';
-import { z } from 'zod';
 import { toast } from 'react-toastify';
-
-type TFormInput = z.infer<typeof UserLogIn>;
+import { TLogInData } from '../../../types/user';
+import { ZUserLogIn } from 'shared';
 
 export const useLogInForm = () => {
-  const formMethods = useForm<TFormInput>({
-    resolver: zodResolver(UserLogIn),
+  const formMethods = useForm<TLogInData>({
+    resolver: zodResolver(ZUserLogIn),
   });
 
   const {
@@ -19,7 +17,7 @@ export const useLogInForm = () => {
 
   const { mutate: logIn, error } = useLogin();
 
-  const onSubmit: SubmitHandler<TFormInput> = (formData) => {
+  const onSubmit: SubmitHandler<TLogInData> = (formData) => {
     if (error?.status === 404) {
       const currentEmail = formMethods.getValues('email');
       if (currentEmail === formData.email) {

@@ -61,9 +61,9 @@ const Passwords = z
 // since only some of the fields are on the first page of our form
 // refine validations dont get triggerd
 // hacky solution
-const UserSignUp = z.intersection(UserSignUpWithoutPasswords, Passwords);
+const ZUserSignUp = z.intersection(UserSignUpWithoutPasswords, Passwords);
 
-const UserLogIn = z.object({
+const ZUserLogIn = z.object({
   email: z
     .string()
     .trim()
@@ -76,4 +76,4 @@ const UserLogIn = z.object({
     .max(18, getMaxCharError("Password", 18)),
 });
 
-export { UserSignUp, UserLogIn };
+export { ZUserSignUp, ZUserLogIn };

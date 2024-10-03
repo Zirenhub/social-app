@@ -2,17 +2,16 @@ import { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
-import { z } from 'zod';
-import { UserSignUp } from 'shared';
 import { useSignUp } from '../../../stores/authStore';
+import { TSignUpData } from '../../../types/user';
+import { ZUserSignUp } from 'shared';
 
-type TFormInput = z.infer<typeof UserSignUp>;
 type TUniqueFields = 'email' | 'username';
 type TConflict = { field: TUniqueFields; value: string };
 
 export const useSignUpForm = () => {
-  const formMethods = useForm<TFormInput>({
-    resolver: zodResolver(UserSignUp),
+  const formMethods = useForm<TSignUpData>({
+    resolver: zodResolver(ZUserSignUp),
     defaultValues: {
       day: new Date().getDate(),
       month: new Date().getMonth(),
@@ -66,7 +65,7 @@ export const useSignUpForm = () => {
     }
   }, [error, getValues]);
 
-  const onSubmit: SubmitHandler<TFormInput> = async (formData) => {
+  const onSubmit: SubmitHandler<TSignUpData> = async (formData) => {
     if (!conflict) {
       signUp(formData);
     } else {

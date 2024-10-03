@@ -1,13 +1,10 @@
 import PageOne from './signUpPages/PageOne';
 import PageTwo from './signUpPages/PageTwo';
-import { z } from 'zod';
 import { useSignUpForm } from './helpers/useSignUpForm';
-import { UserSignUp } from 'shared';
 import { useCallback, useEffect, useState } from 'react';
 import { FIRST_PAGE_FIELDS } from '../../constants/constants';
 import { toast } from 'react-toastify';
-
-type TFormInput = z.infer<typeof UserSignUp>;
+import { TSignUpData } from '../../types/user';
 
 function SignUp() {
   const [page, setPage] = useState<1 | 2>(1);
@@ -42,7 +39,7 @@ function SignUp() {
   const prevPage = () => {
     const values = formMethods.getValues();
     Object.entries(values).forEach(([key, value]) => {
-      formMethods.setValue(key as keyof TFormInput, value);
+      formMethods.setValue(key as keyof TSignUpData, value);
     });
     setPage(1);
   };
