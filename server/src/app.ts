@@ -2,7 +2,7 @@ import express, { Application, Request, Response, NextFunction } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import authRouter from "./routes/auth";
+import apiRouter from "./routes";
 import errorMiddleware from "./middlewares/errorMiddleware";
 
 const app: Application = express();
@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded payloads
 app.use(cookieParser()); // Put JWT in user's cookie
 
 // Routes
-app.use("/api", authRouter);
+app.use("/api", apiRouter);
 
 // Error handling middleware
 app.use((req: Request, res: Response, next: NextFunction) => {

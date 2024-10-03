@@ -2,11 +2,11 @@ import { Router } from "express";
 import authController from "../controllers/authController";
 import verifyJwt from "../middlewares/verifyJwt";
 
-const router: Router = Router();
+const authRouter: Router = Router();
 
-router.post("/auth/login", authController.login);
-router.post("/auth/signup", authController.signup);
-router.post("/auth/logout", verifyJwt, authController.logout);
-router.get("/auth/whoami", verifyJwt, authController.whoami);
+authRouter.post("/login", authController.login);
+authRouter.post("/signup", authController.signup);
+authRouter.post("/logout", verifyJwt, authController.logout);
+authRouter.get("/whoami", verifyJwt, authController.whoami);
 
-export default router;
+export { authRouter };
