@@ -62,6 +62,14 @@ export namespace $Enums {
 export type Gender = (typeof Gender)[keyof typeof Gender]
 
 
+export const Visibility: {
+  EVERYONE: 'EVERYONE',
+  FRIENDS: 'FRIENDS'
+};
+
+export type Visibility = (typeof Visibility)[keyof typeof Visibility]
+
+
 export const FriendRequestStatus: {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
@@ -75,6 +83,10 @@ export type FriendRequestStatus = (typeof FriendRequestStatus)[keyof typeof Frie
 export type Gender = $Enums.Gender
 
 export const Gender: typeof $Enums.Gender
+
+export type Visibility = $Enums.Visibility
+
+export const Visibility: typeof $Enums.Visibility
 
 export type FriendRequestStatus = $Enums.FriendRequestStatus
 
@@ -3874,6 +3886,7 @@ export namespace Prisma {
   export type PostMinAggregateOutputType = {
     id: number | null
     content: string | null
+    visibility: $Enums.Visibility | null
     imageUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3883,6 +3896,7 @@ export namespace Prisma {
   export type PostMaxAggregateOutputType = {
     id: number | null
     content: string | null
+    visibility: $Enums.Visibility | null
     imageUrl: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -3892,6 +3906,7 @@ export namespace Prisma {
   export type PostCountAggregateOutputType = {
     id: number
     content: number
+    visibility: number
     imageUrl: number
     createdAt: number
     updatedAt: number
@@ -3913,6 +3928,7 @@ export namespace Prisma {
   export type PostMinAggregateInputType = {
     id?: true
     content?: true
+    visibility?: true
     imageUrl?: true
     createdAt?: true
     updatedAt?: true
@@ -3922,6 +3938,7 @@ export namespace Prisma {
   export type PostMaxAggregateInputType = {
     id?: true
     content?: true
+    visibility?: true
     imageUrl?: true
     createdAt?: true
     updatedAt?: true
@@ -3931,6 +3948,7 @@ export namespace Prisma {
   export type PostCountAggregateInputType = {
     id?: true
     content?: true
+    visibility?: true
     imageUrl?: true
     createdAt?: true
     updatedAt?: true
@@ -4027,6 +4045,7 @@ export namespace Prisma {
   export type PostGroupByOutputType = {
     id: number
     content: string
+    visibility: $Enums.Visibility
     imageUrl: string | null
     createdAt: Date
     updatedAt: Date
@@ -4055,6 +4074,7 @@ export namespace Prisma {
   export type PostSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     content?: boolean
+    visibility?: boolean
     imageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4068,6 +4088,7 @@ export namespace Prisma {
   export type PostSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     content?: boolean
+    visibility?: boolean
     imageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4078,13 +4099,14 @@ export namespace Prisma {
   export type PostSelectScalar = {
     id?: boolean
     content?: boolean
+    visibility?: boolean
     imageUrl?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     profileId?: boolean
   }
 
-  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "imageUrl" | "createdAt" | "updatedAt" | "profileId", ExtArgs["result"]["post"]>
+  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "visibility" | "imageUrl" | "createdAt" | "updatedAt" | "profileId", ExtArgs["result"]["post"]>
   export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     comments?: boolean | Post$commentsArgs<ExtArgs>
     likes?: boolean | Post$likesArgs<ExtArgs>
@@ -4105,6 +4127,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: number
       content: string
+      visibility: $Enums.Visibility
       imageUrl: string | null
       createdAt: Date
       updatedAt: Date
@@ -4507,6 +4530,7 @@ export namespace Prisma {
   interface PostFieldRefs {
     readonly id: FieldRef<"Post", 'Int'>
     readonly content: FieldRef<"Post", 'String'>
+    readonly visibility: FieldRef<"Post", 'Visibility'>
     readonly imageUrl: FieldRef<"Post", 'String'>
     readonly createdAt: FieldRef<"Post", 'DateTime'>
     readonly updatedAt: FieldRef<"Post", 'DateTime'>
@@ -9084,6 +9108,7 @@ export namespace Prisma {
   export const PostScalarFieldEnum: {
     id: 'id',
     content: 'content',
+    visibility: 'visibility',
     imageUrl: 'imageUrl',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
@@ -9219,6 +9244,20 @@ export namespace Prisma {
    * Reference to a field of type 'Gender[]'
    */
   export type ListEnumGenderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Gender[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Visibility'
+   */
+  export type EnumVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Visibility'>
+    
+
+
+  /**
+   * Reference to a field of type 'Visibility[]'
+   */
+  export type ListEnumVisibilityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Visibility[]'>
     
 
 
@@ -9424,6 +9463,7 @@ export namespace Prisma {
     NOT?: PostWhereInput | PostWhereInput[]
     id?: IntFilter<"Post"> | number
     content?: StringFilter<"Post"> | string
+    visibility?: EnumVisibilityFilter<"Post"> | $Enums.Visibility
     imageUrl?: StringNullableFilter<"Post"> | string | null
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
@@ -9436,6 +9476,7 @@ export namespace Prisma {
   export type PostOrderByWithRelationInput = {
     id?: SortOrder
     content?: SortOrder
+    visibility?: SortOrder
     imageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -9451,6 +9492,7 @@ export namespace Prisma {
     OR?: PostWhereInput[]
     NOT?: PostWhereInput | PostWhereInput[]
     content?: StringFilter<"Post"> | string
+    visibility?: EnumVisibilityFilter<"Post"> | $Enums.Visibility
     imageUrl?: StringNullableFilter<"Post"> | string | null
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
@@ -9463,6 +9505,7 @@ export namespace Prisma {
   export type PostOrderByWithAggregationInput = {
     id?: SortOrder
     content?: SortOrder
+    visibility?: SortOrder
     imageUrl?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -9480,6 +9523,7 @@ export namespace Prisma {
     NOT?: PostScalarWhereWithAggregatesInput | PostScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Post"> | number
     content?: StringWithAggregatesFilter<"Post"> | string
+    visibility?: EnumVisibilityWithAggregatesFilter<"Post"> | $Enums.Visibility
     imageUrl?: StringNullableWithAggregatesFilter<"Post"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
@@ -9910,6 +9954,7 @@ export namespace Prisma {
 
   export type PostCreateInput = {
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9921,6 +9966,7 @@ export namespace Prisma {
   export type PostUncheckedCreateInput = {
     id?: number
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9931,6 +9977,7 @@ export namespace Prisma {
 
   export type PostUpdateInput = {
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9942,6 +9989,7 @@ export namespace Prisma {
   export type PostUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9953,6 +10001,7 @@ export namespace Prisma {
   export type PostCreateManyInput = {
     id?: number
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -9961,6 +10010,7 @@ export namespace Prisma {
 
   export type PostUpdateManyMutationInput = {
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -9969,6 +10019,7 @@ export namespace Prisma {
   export type PostUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10463,6 +10514,13 @@ export namespace Prisma {
     _max?: NestedEnumGenderFilter<$PrismaModel>
   }
 
+  export type EnumVisibilityFilter<$PrismaModel = never> = {
+    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumVisibilityFilter<$PrismaModel> | $Enums.Visibility
+  }
+
   export type ProfileRelationFilter = {
     is?: ProfileWhereInput
     isNot?: ProfileWhereInput
@@ -10471,6 +10529,7 @@ export namespace Prisma {
   export type PostCountOrderByAggregateInput = {
     id?: SortOrder
     content?: SortOrder
+    visibility?: SortOrder
     imageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10485,6 +10544,7 @@ export namespace Prisma {
   export type PostMaxOrderByAggregateInput = {
     id?: SortOrder
     content?: SortOrder
+    visibility?: SortOrder
     imageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10494,6 +10554,7 @@ export namespace Prisma {
   export type PostMinOrderByAggregateInput = {
     id?: SortOrder
     content?: SortOrder
+    visibility?: SortOrder
     imageUrl?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -10503,6 +10564,16 @@ export namespace Prisma {
   export type PostSumOrderByAggregateInput = {
     id?: SortOrder
     profileId?: SortOrder
+  }
+
+  export type EnumVisibilityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.Visibility
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumVisibilityFilter<$PrismaModel>
+    _max?: NestedEnumVisibilityFilter<$PrismaModel>
   }
 
   export type PostRelationFilter = {
@@ -11084,6 +11155,10 @@ export namespace Prisma {
     connect?: LikeWhereUniqueInput | LikeWhereUniqueInput[]
   }
 
+  export type EnumVisibilityFieldUpdateOperationsInput = {
+    set?: $Enums.Visibility
+  }
+
   export type CommentUpdateManyWithoutPostNestedInput = {
     create?: XOR<CommentCreateWithoutPostInput, CommentUncheckedCreateWithoutPostInput> | CommentCreateWithoutPostInput[] | CommentUncheckedCreateWithoutPostInput[]
     connectOrCreate?: CommentCreateOrConnectWithoutPostInput | CommentCreateOrConnectWithoutPostInput[]
@@ -11417,6 +11492,23 @@ export namespace Prisma {
     _max?: NestedEnumGenderFilter<$PrismaModel>
   }
 
+  export type NestedEnumVisibilityFilter<$PrismaModel = never> = {
+    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumVisibilityFilter<$PrismaModel> | $Enums.Visibility
+  }
+
+  export type NestedEnumVisibilityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.Visibility | EnumVisibilityFieldRefInput<$PrismaModel>
+    in?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.Visibility[] | ListEnumVisibilityFieldRefInput<$PrismaModel>
+    not?: NestedEnumVisibilityWithAggregatesFilter<$PrismaModel> | $Enums.Visibility
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumVisibilityFilter<$PrismaModel>
+    _max?: NestedEnumVisibilityFilter<$PrismaModel>
+  }
+
   export type NestedEnumFriendRequestStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.FriendRequestStatus | EnumFriendRequestStatusFieldRefInput<$PrismaModel>
     in?: $Enums.FriendRequestStatus[] | ListEnumFriendRequestStatusFieldRefInput<$PrismaModel>
@@ -11530,6 +11622,7 @@ export namespace Prisma {
 
   export type PostCreateWithoutProfileInput = {
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11540,6 +11633,7 @@ export namespace Prisma {
   export type PostUncheckedCreateWithoutProfileInput = {
     id?: number
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -11737,6 +11831,7 @@ export namespace Prisma {
     NOT?: PostScalarWhereInput | PostScalarWhereInput[]
     id?: IntFilter<"Post"> | number
     content?: StringFilter<"Post"> | string
+    visibility?: EnumVisibilityFilter<"Post"> | $Enums.Visibility
     imageUrl?: StringNullableFilter<"Post"> | string | null
     createdAt?: DateTimeFilter<"Post"> | Date | string
     updatedAt?: DateTimeFilter<"Post"> | Date | string
@@ -12083,6 +12178,7 @@ export namespace Prisma {
 
   export type PostCreateWithoutCommentsInput = {
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12093,6 +12189,7 @@ export namespace Prisma {
   export type PostUncheckedCreateWithoutCommentsInput = {
     id?: number
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12162,6 +12259,7 @@ export namespace Prisma {
 
   export type PostUpdateWithoutCommentsInput = {
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12172,6 +12270,7 @@ export namespace Prisma {
   export type PostUncheckedUpdateWithoutCommentsInput = {
     id?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12231,6 +12330,7 @@ export namespace Prisma {
 
   export type PostCreateWithoutLikesInput = {
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12241,6 +12341,7 @@ export namespace Prisma {
   export type PostUncheckedCreateWithoutLikesInput = {
     id?: number
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12310,6 +12411,7 @@ export namespace Prisma {
 
   export type PostUpdateWithoutLikesInput = {
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12320,6 +12422,7 @@ export namespace Prisma {
   export type PostUncheckedUpdateWithoutLikesInput = {
     id?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12756,6 +12859,7 @@ export namespace Prisma {
   export type PostCreateManyProfileInput = {
     id?: number
     content: string
+    visibility: $Enums.Visibility
     imageUrl?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12805,6 +12909,7 @@ export namespace Prisma {
 
   export type PostUpdateWithoutProfileInput = {
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12815,6 +12920,7 @@ export namespace Prisma {
   export type PostUncheckedUpdateWithoutProfileInput = {
     id?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12825,6 +12931,7 @@ export namespace Prisma {
   export type PostUncheckedUpdateManyWithoutProfileInput = {
     id?: IntFieldUpdateOperationsInput | number
     content?: StringFieldUpdateOperationsInput | string
+    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -52,11 +52,12 @@ model Profile {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  content   String
-  imageUrl  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  content     String
+  visibility  Visibility
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   comments  Comment[]
   likes     Like[]
@@ -131,4 +132,9 @@ enum Gender {
   MALE
   FEMALE
   OTHER
+}
+
+enum Visibility {
+  EVERYONE
+  FRIENDS
 }

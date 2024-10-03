@@ -147,6 +147,7 @@ exports.Prisma.ProfileScalarFieldEnum = {
 exports.Prisma.PostScalarFieldEnum = {
   id: 'id',
   content: 'content',
+  visibility: 'visibility',
   imageUrl: 'imageUrl',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -203,6 +204,11 @@ exports.Gender = exports.$Enums.Gender = {
   MALE: 'MALE',
   FEMALE: 'FEMALE',
   OTHER: 'OTHER'
+};
+
+exports.Visibility = exports.$Enums.Visibility = {
+  EVERYONE: 'EVERYONE',
+  FRIENDS: 'FRIENDS'
 };
 
 exports.FriendRequestStatus = exports.$Enums.FriendRequestStatus = {
