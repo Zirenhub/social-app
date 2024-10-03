@@ -6,14 +6,14 @@ import { ApiError } from '../api/error';
 
 import { devtools } from 'zustand/middleware';
 
-type TAuthState = {
+type TAuthStore = {
   user: TAuthUser | null;
   isAuthenticated: boolean;
   setUser: (user: TAuthUser) => void;
   logout: () => void;
 };
 
-const useAuthStore = create<TAuthState>()(
+const useAuthStore = create<TAuthStore>()(
   devtools((set) => ({
     user: null,
     isAuthenticated: false,
