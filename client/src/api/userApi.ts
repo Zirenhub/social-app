@@ -1,16 +1,16 @@
 import api from '../app/axios';
-import { ApiResponse, TAuthUser } from 'shared';
+import { ApiResponse, TAuthUserApi } from 'shared';
 import { errorHandler } from './errorHandler';
 import { TLogInData, TSignUpData } from '../types/user';
 
 // API functions
-const whoAmIBase = () => api.get<ApiResponse<TAuthUser>>('auth/whoami');
+const whoAmIBase = () => api.get<ApiResponse<TAuthUserApi>>('auth/whoami');
 
 const logInApiBase = (data: TLogInData) =>
-  api.post<ApiResponse<TAuthUser>>('auth/login', data);
+  api.post<ApiResponse<TAuthUserApi>>('auth/login', data);
 
 const signupApiBase = (data: TSignUpData) =>
-  api.post<ApiResponse<TAuthUser>>('auth/signup', data);
+  api.post<ApiResponse<TAuthUserApi>>('auth/signup', data);
 
 const logoutApiBase = () => api.post<ApiResponse<null>>('auth/logout');
 

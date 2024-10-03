@@ -1,7 +1,8 @@
 import type { ApiResponse } from "./apiResponse";
-import { User, Profile } from "../types";
+import { User, Profile, Post } from "../types";
 
-type TAuthUser = Omit<User, "passwordHash"> & { profile: Profile };
-type TProfile = Omit<Profile, "userId">;
+type TAuthUserApi = Omit<User, "passwordHash"> & { profile: Profile };
+type TProfileApi = Omit<Profile, "userId">;
+type TPostApi = Post & { profile: Omit<Profile, "userId"> };
 
-export { ApiResponse, TAuthUser, TProfile };
+export { ApiResponse, TAuthUserApi, TProfileApi, TPostApi };

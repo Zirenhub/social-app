@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { Response, Request, NextFunction } from "express";
 import { HttpException } from "../exceptions/error";
-import { TAuthUser } from "@shared";
+import { TAuthUserApi } from "@shared";
 import { HTTP_RESPONSE_CODE } from "../constants/constant";
 
 const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
@@ -15,7 +15,7 @@ const verifyJwt = (req: Request, res: Response, next: NextFunction) => {
   }
 
   try {
-    const user = jwt.verify(token, process.env.SECRET!) as TAuthUser; // Type the JWT payload
+    const user = jwt.verify(token, process.env.SECRET!) as TAuthUserApi; // Type the JWT payload
     req.user = user;
     next();
   } catch (err) {

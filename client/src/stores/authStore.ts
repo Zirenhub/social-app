@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { TAuthUser } from 'shared';
+import { TAuthUserApi } from 'shared';
 import { logInApi, logoutApi, signupApi } from '../api/userApi';
 import { ApiError } from '../api/error';
 import { devtools } from 'zustand/middleware';
 
 type TAuthStore = {
-  user: TAuthUser | null;
+  user: TAuthUserApi | null;
   isAuthenticated: boolean;
-  setUser: (user: TAuthUser) => void;
+  setUser: (user: TAuthUserApi) => void;
   logout: () => void;
 };
 
@@ -16,7 +16,7 @@ const useAuthStore = create<TAuthStore>()(
   devtools((set) => ({
     user: null,
     isAuthenticated: false,
-    setUser: (user: TAuthUser) => set({ user, isAuthenticated: true }),
+    setUser: (user: TAuthUserApi) => set({ user, isAuthenticated: true }),
     logout: () => set({ user: null, isAuthenticated: false }),
   }))
 );

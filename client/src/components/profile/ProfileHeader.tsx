@@ -1,9 +1,9 @@
-import { TProfile } from 'shared';
+import { TProfileApi } from 'shared';
 import { format } from 'date-fns';
 import ProfilePicture from './ProfilePicture';
 
 type Props = {
-  profile: TProfile;
+  profile: TProfileApi;
 };
 
 function ProfileHeader({ profile }: Props) {
