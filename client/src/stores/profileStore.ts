@@ -3,6 +3,7 @@ import { TProfile } from 'shared';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { getProfileApi } from '../api/profileApi';
+import { ApiError } from '../api/error';
 
 type TProfileStore = {
   profile: TProfile | null;
@@ -17,9 +18,10 @@ const useProfileStore = create<TProfileStore>()(
 );
 
 export const useProfileQuery = (username: string) => {
-  return useQuery({
+  return useQuery<TProfile, ApiError>({
     queryKey: ['profile', username],
     queryFn: () => getProfileApi(username),
+    retry: false,
   });
 };
 

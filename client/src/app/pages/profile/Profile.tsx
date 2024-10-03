@@ -18,7 +18,7 @@ function Profile() {
   }
 
   if (error) {
-    return <div>Error fetching profile ${error.message}</div>;
+    return <div className="p-4">{error.message}</div>;
   }
 
   return (
