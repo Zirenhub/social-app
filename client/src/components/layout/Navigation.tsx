@@ -18,7 +18,11 @@ function Navigation() {
   const { pathname } = useLocation();
   const navLinks = [
     { value: 'Home', to: '/', svg: 'bg-home' },
-    { value: 'Profile', to: 'profile', svg: 'bg-profile' },
+    {
+      value: 'Profile',
+      to: user?.profile.username as string,
+      svg: 'bg-profile',
+    },
   ];
 
   const isCurrentPath = (path: string) => {

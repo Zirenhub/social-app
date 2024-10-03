@@ -1,20 +1,29 @@
 import { useState } from 'react';
 import ProfileHeader from '../../../components/profile/ProfileHeader';
-import useAuthStore from '../../../stores/authStore';
+import { useParams } from 'react-router-dom';
+import { useProfileQuery } from '../../../stores/profileStore';
 
 type TTabs = 'Posts' | 'Likes' | 'Comments' | 'Friends';
+const profileButtonStyle = 'grow hover:bg-gray-300 transition-all py-3';
+const tabs: TTabs[] = ['Posts', 'Likes', 'Comments', 'Friends'];
 
 function Profile() {
   const [activeTab, setActiveTab] = useState<TTabs>('Posts');
+  const { username } = useParams();
 
-  const user = useAuthStore((state) => state.user)!;
-  const profileButtonStyle = 'grow hover:bg-gray-300 transition-all py-3';
+  const { data: profile, isLoading, error } = useProfileQuery(username!);
 
-  const tabs: TTabs[] = ['Posts', 'Likes', 'Comments', 'Friends'];
+  if (isLoading) {
+    return <div>Loading profile...</div>;
+  }
+
+  if (error) {
+    return <div>Error fetching profile ${error.message}</div>;
+  }
 
   return (
     <div>
-      <ProfileHeader user={user} />
+      <ProfileHeader profile={profile!} />
       <div className="pt-20">
         <div className="flex">
           {tabs.map((tab) => {
