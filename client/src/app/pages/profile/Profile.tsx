@@ -1,29 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProfileHeader from '../../../components/profile/ProfileHeader';
 import { useParams } from 'react-router-dom';
-import { useProfileQuery } from '../../../stores/profileStore';
+import useProfileStore, { useProfileQuery } from '../../../stores/profileStore';
+import IsLoading from '../../../components/IsLoading';
+import ShowError from '../../../components/ShowError';
 
 type TTabs = 'Posts' | 'Likes' | 'Comments' | 'Friends';
 const profileButtonStyle = 'grow hover:bg-gray-300 transition-all py-3';
 const tabs: TTabs[] = ['Posts', 'Likes', 'Comments', 'Friends'];
 
 function Profile() {
+  const { profile, setProfile } = useProfileStore();
   const [activeTab, setActiveTab] = useState<TTabs>('Posts');
   const { username } = useParams();
 
-  const { data: profile, isLoading, error } = useProfileQuery(username!);
+  const { data, isLoading, error } = useProfileQuery(username!);
+
+  useEffect(() => {
+    if (data) setProfile(data);
+  }, [data, setProfile]);
 
   if (isLoading) {
-    return <div>Loading profile...</div>;
+    <IsLoading />;
   }
 
   if (error) {
-    return <div className="p-4">{error.message}</div>;
+    <ShowError message={error.message} />;
   }
 
   return (
     <div>
-      <ProfileHeader profile={profile!} />
+      {profile && <ProfileHeader profile={profile} />}
       <div className="pt-20">
         <div className="flex">
           {tabs.map((tab) => {
