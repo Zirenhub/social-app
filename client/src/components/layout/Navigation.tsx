@@ -4,9 +4,12 @@ import { toast } from 'react-toastify';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { modalVariants } from '../../constants/constants';
+import CreatePostModal from '../post/CreatePostModal';
+import ProfilePicture from '../profile/ProfilePicture';
 
 function Navigation() {
   const [userOptionsModal, setUserOptionsModal] = useState<boolean>(false);
+  const [postModal, setPostModal] = useState<boolean>(false);
   const user = useAuthStore((state) => state.user);
 
   const { mutate: logout, error } = useLogout();
@@ -36,7 +39,7 @@ function Navigation() {
 
   return (
     <nav className="basis-1/5 flex flex-col justify-between bg-third/75 shadow-lg rounded-xl m-1">
-      <ul className="flex flex-col gap-3 m-4">
+      <ul className="flex flex-col gap-3 m-4 h-full">
         {navLinks.map((link) => (
           <li
             key={link.value}
@@ -52,8 +55,18 @@ function Navigation() {
             </Link>
           </li>
         ))}
+        <button
+          onClick={() => setPostModal(!postModal)}
+          className="mt-auto text-2xl bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105 hover:bg-fourth hover:text-primary"
+        >
+          Create New Post
+        </button>
       </ul>
-
+      {postModal && (
+        <AnimatePresence>
+          <CreatePostModal close={() => setPostModal(false)} />
+        </AnimatePresence>
+      )}
       <div
         onClick={() => setUserOptionsModal(!userOptionsModal)}
         className={`flex justify-between items-center cursor-pointer select-none rounded-lg relative m-4 p-3 transition-all bg-secondary/80 ${userOptionsModal && 'bg-[#664343]'} text-white shadow-md backdrop-blur-md`}
@@ -82,7 +95,9 @@ function Navigation() {
           )}
         </AnimatePresence>
         <div className="flex gap-4 items-center">
-          <div className="w-16 h-16 rounded-full bg-default-pfp bg-cover bg-center border-2 border-secondary shadow-lg"></div>
+          <ProfilePicture
+            styles={'w-16 h-16 border-2 border-secondary shadow-lg'}
+          />
           <div className="flex flex-col">
             <span className="text-lg font-bold text-primary truncate">
               {user?.profile.firstName} {user?.profile.lastName}
