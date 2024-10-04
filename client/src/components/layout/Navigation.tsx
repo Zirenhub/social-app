@@ -42,13 +42,13 @@ function Navigation() {
   }, [error]);
 
   return (
-    <nav className="basis-1/5 flex flex-col justify-between bg-third/75 shadow-lg rounded-xl m-1">
+    <nav className="flex flex-col justify-between bg-third/75 shadow-lg rounded-xl m-1">
       <ul className="flex flex-col gap-3 m-4 h-full">
         {navLinks.map((link) => (
           <li
             key={link.value}
             onClick={() => navigate(link.to)}
-            className="text-2xl flex items-center gap-3 hover:underline underline-offset-4 bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105"
+            className="text-lg flex items-center gap-3 hover:underline underline-offset-4 bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105"
           >
             <div className={`w-8 h-8 ${link.svg} bg-cover bg-center`} />
             <Link
@@ -61,7 +61,7 @@ function Navigation() {
         ))}
         <button
           onClick={() => setPostModal(!postModal)}
-          className="mt-auto text-2xl bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105 hover:bg-fourth hover:text-primary"
+          className="mt-auto text-lg bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105 hover:bg-fourth hover:text-primary"
         >
           Create New Post
         </button>
@@ -83,10 +83,10 @@ function Navigation() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="bg-fourth text-primary -top-[15%] left-1/2 -translate-x-1/2 -translate-y-1/2 absolute py-2 px-4 rounded-lg z-10 shadow-xl"
+              className="bg-fourth text-primary absolute -top-1 right-0 py-2 px-4 rounded-lg z-10 shadow-xl"
             >
               <button
-                className="font-bold hover:underline underline-offset-4 transition-transform transform hover:scale-105"
+                className="font-medium text-sm hover:underline underline-offset-4 transition-transform transform hover:scale-105"
                 onClick={(e) => {
                   e.stopPropagation();
                   logout({});
@@ -94,16 +94,16 @@ function Navigation() {
               >
                 Log Out @{user?.profile.username}
               </button>
-              <div className="absolute top-[25px] left-3/4">&#9660;</div>
+              <div className="absolute -bottom-[18px] right-2">&#9660;</div>
             </motion.div>
           )}
         </AnimatePresence>
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-1 items-center">
           <ProfilePicture
-            styles={'w-16 h-16 border-2 border-secondary shadow-lg'}
+            styles={'w-12 h-12 border-2 border-secondary shadow-lg'}
           />
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-primary truncate">
+            <span className="text-md font-bold text-primary truncate">
               {user?.profile.firstName} {user?.profile.lastName}
             </span>
             <span className="text-sm text-primary">
@@ -111,7 +111,7 @@ function Navigation() {
             </span>
           </div>
         </div>
-        <div className="bg-ellipsis bg-cover bg-center h-4 w-4 mr-3"></div>
+        <div className="bg-ellipsis bg-cover bg-center h-4 w-4 ml-8"></div>
       </div>
     </nav>
   );
