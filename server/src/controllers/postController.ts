@@ -19,9 +19,9 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     const validatedData = ZPost.parse(req.body);
     const newPost = await client.post.create({
       data: { ...validatedData, profileId: req.user!.profile.id },
-      //   include: {
-      //     profile: true, // Include profile data in the response
-      //   },
+      include: {
+        profile: true, // Include profile data in the response
+      },
     });
     sendSuccessResponse(res, newPost);
   } catch (err) {
