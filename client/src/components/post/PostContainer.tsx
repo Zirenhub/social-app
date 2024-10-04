@@ -23,10 +23,10 @@ function PostContainer({ post }: Props) {
   ];
 
   return (
-    <div className="flex flex-col border-secondary/30 border-b-2 px-3 py-2 w-full max-w-full">
-      <div className="flex gap-2 w-full">
+    <div className="flex flex-col border-secondary/30 border-b-2 px-3 py-2">
+      <div className="flex gap-2">
         <ProfilePicture styles="h-12 w-12 flex-shrink-0 border-2 border-secondary/40" />
-        <div className="flex flex-col min-w-0 flex-grow">
+        <div className="flex flex-col">
           <p className="break-words">
             <span className="text-secondary font-bold">
               {post.profile.firstName} {post.profile.lastName}
@@ -44,8 +44,8 @@ function PostContainer({ post }: Props) {
           </p>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-between mt-2 gap-2">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="flex items-center justify-between mt-2 gap-2">
+        <div className="flex items-center gap-3">
           {interactions.map((interaction) => (
             <div
               key={interaction.type}
