@@ -6,7 +6,11 @@ import { sendSuccessResponse } from "../utils/responseHandler";
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const all = await client.post.findMany({
-      include: { profile: { omit: { userId: true } } },
+      include: {
+        profile: { omit: { userId: true } },
+        likes: true,
+        comments: true,
+      },
     });
     sendSuccessResponse(res, all);
   } catch (err) {
@@ -20,7 +24,9 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
     const newPost = await client.post.create({
       data: { ...validatedData, profileId: req.user!.profile.id },
       include: {
-        profile: true, // Include profile data in the response
+        profile: { omit: { userId: true } },
+        likes: true,
+        comments: true,
       },
     });
     sendSuccessResponse(res, newPost);

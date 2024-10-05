@@ -1,1 +1,1 @@
-export type { Profile, User, Post } from "./prisma";
+export type { Profile, User, Post, Like, Comment } from "./prisma";
