@@ -4,21 +4,23 @@ import { useParams } from 'react-router-dom';
 import useProfileStore, { useProfileQuery } from '../../../stores/profileStore';
 import IsLoading from '../../../components/IsLoading';
 import ShowError from '../../../components/ShowError';
+import useAuthStore from '../../../stores/authStore';
 
 type TTabs = 'Posts' | 'Likes' | 'Comments' | 'Friends';
 const profileButtonStyle = 'grow hover:bg-gray-300 transition-all py-3';
 const tabs: TTabs[] = ['Posts', 'Likes', 'Comments', 'Friends'];
 
 function Profile() {
-  const { profile, setProfile } = useProfileStore();
+  const { profile, setProfile, isMyProfile } = useProfileStore();
+  const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<TTabs>('Posts');
   const { username } = useParams();
 
   const { data, isLoading, error } = useProfileQuery(username!);
 
   useEffect(() => {
-    if (data) setProfile(data);
-  }, [data, setProfile]);
+    if (data && user) setProfile(data, user.profile.username);
+  }, [data, setProfile, user]);
 
   if (isLoading) {
     <IsLoading />;
@@ -30,7 +32,7 @@ function Profile() {
 
   return (
     <div>
-      {profile && <ProfileHeader profile={profile} />}
+      {profile && <ProfileHeader profile={profile} isMyProfile={isMyProfile} />}
       <div className="pt-20">
         <div className="flex">
           {tabs.map((tab) => {
