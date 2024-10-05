@@ -23,11 +23,11 @@ function Profile() {
   }, [data, setProfile, user]);
 
   if (isLoading) {
-    <IsLoading />;
+    return <IsLoading />;
   }
 
   if (error) {
-    <ShowError message={error.message} />;
+    return <ShowError message={error.message} />;
   }
 
   return (
