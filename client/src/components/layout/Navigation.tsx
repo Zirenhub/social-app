@@ -1,18 +1,15 @@
-import { useEffect, useState } from 'react';
-import useAuthStore, { useLogout } from '../../stores/authStore';
-import { toast } from 'react-toastify';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import { modalVariants } from '../../constants/constants';
+import { useState } from 'react';
+import useAuthStore from '../../stores/authStore';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import CreatePostModal from '../post/CreatePostModal';
-import ProfilePicture from '../profile/ProfilePicture';
+import UserBar from './UserBar';
 
 function Navigation() {
-  const [userOptionsModal, setUserOptionsModal] = useState<boolean>(false);
   const [postModal, setPostModal] = useState<boolean>(false);
+  const [notificationsSideBar, setNotificationsSideBar] =
+    useState<boolean>(false);
   const user = useAuthStore((state) => state.user);
-
-  const { mutate: logout, error } = useLogout();
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -23,6 +20,13 @@ function Navigation() {
       to: user?.profile.username as string,
       svg: 'bg-profile',
     },
+  ];
+  const interactions = [
+    {
+      value: 'Notifications',
+      action: () => setNotificationsSideBar(!notificationsSideBar),
+    },
+    { value: 'Create New Post', action: () => setPostModal(!postModal) },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -37,10 +41,6 @@ function Navigation() {
     return false;
   };
 
-  useEffect(() => {
-    if (error) toast.error(error.message);
-  }, [error]);
-
   return (
     <nav className="flex flex-col justify-between bg-third/75 shadow-lg rounded-xl m-1">
       <ul className="flex flex-col gap-3 m-4 h-full">
@@ -51,68 +51,33 @@ function Navigation() {
             className="text-lg flex items-center gap-3 hover:underline underline-offset-4 bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105"
           >
             <div className={`w-8 h-8 ${link.svg} bg-cover bg-center`} />
-            <Link
-              to={link.to}
-              className={isCurrentPath(link.to) ? 'font-bold' : ''}
-            >
+            <p className={isCurrentPath(link.to) ? 'font-bold' : ''}>
               {link.value}
-            </Link>
+            </p>
           </li>
         ))}
-        <button
-          onClick={() => setPostModal(!postModal)}
-          className="mt-auto text-lg bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105 hover:bg-fourth hover:text-primary"
-        >
-          Create New Post
-        </button>
+        <div className="flex flex-col mt-auto gap-2">
+          {interactions.map((interaction) => (
+            <button
+              key={interaction.value}
+              onClick={interaction.action}
+              className="text-lg bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105 hover:bg-fourth hover:text-primary"
+            >
+              {interaction.value}
+            </button>
+          ))}
+        </div>
       </ul>
+
       {postModal && (
         <AnimatePresence>
           <CreatePostModal close={() => setPostModal(false)} />
         </AnimatePresence>
       )}
-      <div
-        onClick={() => setUserOptionsModal(!userOptionsModal)}
-        className={`flex justify-between items-center cursor-pointer select-none rounded-lg relative m-4 p-3 transition-all bg-secondary/80 ${userOptionsModal && 'bg-[#664343]'} text-white shadow-md backdrop-blur-md`}
-      >
-        <AnimatePresence>
-          {userOptionsModal && (
-            <motion.div
-              variants={modalVariants}
-              key={'modal'}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="bg-fourth text-primary absolute -top-1 right-0 py-2 px-4 rounded-lg z-10 shadow-xl"
-            >
-              <button
-                className="font-medium text-sm hover:underline underline-offset-4 transition-transform transform hover:scale-105"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  logout({});
-                }}
-              >
-                Log Out @{user?.profile.username}
-              </button>
-              <div className="absolute -bottom-[18px] right-2">&#9660;</div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        <div className="flex gap-1 items-center">
-          <ProfilePicture
-            styles={'w-12 h-12 border-2 border-secondary shadow-lg'}
-          />
-          <div className="flex flex-col">
-            <span className="text-md font-bold text-primary truncate">
-              {user?.profile.firstName} {user?.profile.lastName}
-            </span>
-            <span className="text-sm text-primary">
-              @{user?.profile.username}
-            </span>
-          </div>
-        </div>
-        <div className="bg-ellipsis bg-cover bg-center h-4 w-4 ml-8"></div>
-      </div>
+
+      {/* show notifications side bar */}
+
+      <UserBar user={user} />
     </nav>
   );
 }
