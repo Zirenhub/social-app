@@ -7,13 +7,16 @@ import { ApiError } from '../api/error';
 
 type TProfileStore = {
   profile: TProfileApi | null;
-  setProfile: (profile: TProfileApi) => void;
+  isMyProfile: boolean;
+  setProfile: (profile: TProfileApi, currentUsername: string) => void;
 };
 
 const useProfileStore = create<TProfileStore>()(
   devtools((set) => ({
     profile: null,
-    setProfile: (profile: TProfileApi) => set({ profile }),
+    isMyProfile: false,
+    setProfile: (profile: TProfileApi, currentUsername: string) =>
+      set({ profile, isMyProfile: profile.username === currentUsername }),
   }))
 );
 
