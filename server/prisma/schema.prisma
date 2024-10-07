@@ -48,6 +48,7 @@ model Profile {
   userId Int  @unique
   user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([id, userId])
   @@index([username])
 }
 
@@ -112,10 +113,9 @@ model FriendRequest {
   status    FriendRequestStatus
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt
-
-  sender     Profile @relation("ProfileSentRequests", fields: [senderId], references: [id], onDelete: Cascade)
-  senderId   Int
-  receiver   Profile @relation("ProfileReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender    Profile             @relation("ProfileSentRequests", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId  Int
+  receiver  Profile             @relation("ProfileReceivedRequests", fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId Int
 
   @@unique([senderId, receiverId])
@@ -125,7 +125,6 @@ model FriendRequest {
 enum FriendRequestStatus {
   PENDING
   ACCEPTED
-  REJECTED
 }
 
 enum Gender {
