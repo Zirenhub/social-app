@@ -3,14 +3,14 @@ import { TPostApi } from 'shared';
 import ProfilePicture from '../profile/ProfilePicture';
 import HeartIcon from '../svg/HeartIcon';
 import CommentIcon from '../svg/CommentIcon';
-import { useNavigate } from 'react-router-dom';
+import ProfileTitle from '../common/ProfileTitle';
 
 type Props = {
   post: TPostApi;
 };
 
 function PostContainer({ post }: Props) {
-  const navigate = useNavigate();
+  const { firstName, lastName, username } = post.profile;
 
   const interactions = [
     {
@@ -30,17 +30,7 @@ function PostContainer({ post }: Props) {
       <div className="flex gap-2">
         <ProfilePicture styles="h-12 w-12 flex-shrink-0 border-2 border-secondary/40" />
         <div className="flex flex-col cursor-pointer">
-          <div
-            onClick={() => navigate(post.profile.username)}
-            className="break-words w-fit"
-          >
-            <span className="text-secondary font-bold hover:underline underline-offset-4">
-              {post.profile.firstName} {post.profile.lastName}
-            </span>{' '}
-            <span className="font-medium text-xs text-secondary/50">
-              @{post.profile.username}
-            </span>
-          </div>
+          <ProfileTitle identifiers={{ firstName, lastName, username }} />
           {/* Ensure long words break and don't overflow */}
           <p
             className="break-words text-fourth"
