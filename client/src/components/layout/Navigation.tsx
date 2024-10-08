@@ -5,10 +5,13 @@ import { AnimatePresence } from 'framer-motion';
 import CreatePostModal from '../post/CreatePostModal';
 import UserBar from './UserBar';
 
-function Navigation() {
+type Props = {
+  toggleNotifSideBar: () => void;
+};
+
+function Navigation({ toggleNotifSideBar }: Props) {
   const [postModal, setPostModal] = useState<boolean>(false);
-  const [notificationsSideBar, setNotificationsSideBar] =
-    useState<boolean>(false);
+
   const user = useAuthStore((state) => state.user);
 
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ function Navigation() {
   const interactions = [
     {
       value: 'Notifications',
-      action: () => setNotificationsSideBar(!notificationsSideBar),
+      action: toggleNotifSideBar,
     },
     { value: 'Create New Post', action: () => setPostModal(!postModal) },
   ];
@@ -68,15 +71,11 @@ function Navigation() {
           ))}
         </div>
       </ul>
-
       {postModal && (
         <AnimatePresence>
           <CreatePostModal close={() => setPostModal(false)} />
         </AnimatePresence>
       )}
-
-      {/* show notifications side bar */}
-
       <UserBar user={user} />
     </nav>
   );
