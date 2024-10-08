@@ -115,4 +115,27 @@ const deleteFriendRequest = async (
   }
 };
 
-export default { get, friendRequest, deleteFriendRequest };
+const getAllFriendRequests = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const currentUserProfileId = validateCurrentUserProfile(req.user);
+    const allFriendRequests = await client.friendRequest.findMany({
+      where: { receiverId: currentUserProfileId },
+      include: { sender: { omit: { userId: true } } },
+    });
+
+    sendSuccessResponse(res, allFriendRequests);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default {
+  get,
+  friendRequest,
+  deleteFriendRequest,
+  getAllFriendRequests,
+};

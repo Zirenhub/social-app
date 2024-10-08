@@ -4,6 +4,11 @@ import profileController from "../controllers/profileController";
 
 const profileRouter: Router = Router();
 
+profileRouter.get(
+  "/friend-request",
+  verifyJwt,
+  profileController.getAllFriendRequests
+);
 profileRouter.get("/:username", verifyJwt, profileController.get);
 profileRouter.post(
   "/:username/friend-request",
