@@ -1,15 +1,8 @@
-import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
 import { TPostApi } from 'shared';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createPostApi, getAllPostsApi } from '../api/postApi';
 import { ApiError } from '../api/error';
-
-type TPostsStore = {
-  posts: TPostApi[];
-  addPost: (post: TPostApi) => void;
-  initPosts: (posts: TPostApi[]) => void;
-};
+import queryKeys from '../constants/queryKeys';
 
 const correctDate = (post: TPostApi) => {
   return {
@@ -23,38 +16,36 @@ const correctDateArr = (posts: TPostApi[]) => {
   return posts.map((post) => correctDate(post));
 };
 
-const usePostsStore = create<TPostsStore>()(
-  devtools((set) => ({
-    posts: [],
-    addPost: (post: TPostApi) =>
-      set((state) => ({ posts: [correctDate(post), ...state.posts] })),
-    initPosts: (posts: TPostApi[]) =>
-      set({ posts: correctDateArr(posts).reverse() }), // reverse so the newest posts are on top
-  }))
-);
-
 export const useGetAllPostsQuery = () => {
   return useQuery<TPostApi[], ApiError>({
-    queryKey: ['posts'],
+    queryKey: queryKeys.posts,
     queryFn: getAllPostsApi,
     retry: false,
+    select(data) {
+      return correctDateArr(data);
+    },
   });
 };
 
-export const useCreatePost = (success: () => void) => {
-  const addPost = usePostsStore((state) => state.addPost);
+type TCreatePost = {
+  onSuccess: () => void;
+  onError: (errMsg: string) => void;
+};
+
+export const useCreatePost = ({ onSuccess, onError }: TCreatePost) => {
+  const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: createPostApi,
     onSuccess: (data) => {
-      addPost(data);
-      // queryClient.setQueryData(['posts'], data);
-      success();
+      queryClient.setQueryData(queryKeys.posts, (oldData: TPostApi[] = []) => {
+        return [correctDate(data), ...oldData];
+      });
+      onSuccess();
     },
     onError: (err: ApiError) => {
       console.log(err);
+      onError(err.message);
     },
   });
 };
-
-export default usePostsStore;

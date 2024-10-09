@@ -15,18 +15,22 @@ type Props = {
 
 function ProfileHeader({ profile, isMyProfile }: Props) {
   const { mutate: request, isPending: requestIsPending } =
-    useFriendshipRequestMutation(
-      profile.username,
-      () => toast.success('Friend request sent!'),
-      (errorMsg: string) => toast.error(errorMsg)
-    );
+    useFriendshipRequestMutation({
+      username: profile.username,
+      callbacks: {
+        onSuccess: () => toast.success('Friend request sent!'),
+        onError: (errorMsg: string) => toast.error(errorMsg),
+      },
+    });
 
   const { mutate: deleteRequest, isPending: cancelIsPending } =
-    useDeleteFriendshipRequestMutation(
-      profile.username,
-      () => toast.success('Friend deleted!'),
-      (errorMsg: string) => toast.error(errorMsg)
-    );
+    useDeleteFriendshipRequestMutation({
+      username: profile.username,
+      callbacks: {
+        onSuccess: () => toast.success('Friend deleted!'),
+        onError: (errorMsg: string) => toast.error(errorMsg),
+      },
+    });
 
   const renderActionButton = () => {
     if (isMyProfile) {
@@ -37,20 +41,15 @@ function ProfileHeader({ profile, isMyProfile }: Props) {
         />
       );
     }
-    if (requestIsPending) {
+    if (requestIsPending || cancelIsPending) {
       return (
         <ProfileActionBtn
-          label="Request is pending..."
-          className="bg-green-400 hover:bg-blue-500"
-          disabled={true}
-        />
-      );
-    }
-    if (cancelIsPending) {
-      return (
-        <ProfileActionBtn
-          label="Canceling..."
-          className="bg-red-400 hover:bg-red-500"
+          label={requestIsPending ? 'Request is pending...' : 'Canceling...'}
+          className={
+            requestIsPending
+              ? 'bg-green-400 hover:bg-blue-500'
+              : 'bg-red-400 hover:bg-red-500'
+          }
           disabled={true}
         />
       );

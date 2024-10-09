@@ -5,13 +5,12 @@ import {
   slideLeftVariants,
 } from '../../constants/constants';
 import Navigation from './Navigation';
-import { useState } from 'react';
 import Notifications from './Notifications';
+import useLayoutStore from '../../stores/layoutStore';
 
 const Layout = () => {
+  const { isNotificationsSidebarOpen } = useLayoutStore();
   const location = useLocation();
-  const [notificationsSideBar, setNotificationsSideBar] =
-    useState<boolean>(false);
 
   return (
     <motion.div
@@ -23,11 +22,7 @@ const Layout = () => {
       className="flex h-screen w-full"
     >
       <div className="flex flex-1 backdrop-blur-lg">
-        <Navigation
-          toggleNotifSideBar={() =>
-            setNotificationsSideBar(!notificationsSideBar)
-          }
-        />
+        <Navigation />
         <main className="flex-grow p-2 bg-primary text-fourth shadow-inner rounded-xl m-1 flex">
           <motion.div
             key={location.pathname}
@@ -40,7 +35,7 @@ const Layout = () => {
           >
             <Outlet />
           </motion.div>
-          {notificationsSideBar && <Notifications />}
+          {isNotificationsSidebarOpen && <Notifications />}
         </main>
       </div>
     </motion.div>

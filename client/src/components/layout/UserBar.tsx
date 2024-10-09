@@ -1,30 +1,28 @@
 import ProfilePicture from '../profile/ProfilePicture';
 import { modalVariants } from '../../constants/constants';
 import { useLogout } from '../../stores/authStore';
-import { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TAuthUserApi } from 'shared';
+import useLayoutStore from '../../stores/layoutStore';
+import { toast } from 'react-toastify';
 
 type Props = {
   user: TAuthUserApi | null;
 };
 
 function UserBar({ user }: Props) {
-  const [userOptionsModal, setUserOptionsModal] = useState<boolean>(false);
-  const { mutate: logout, error } = useLogout();
-
-  useEffect(() => {
-    if (error) toast.error(error.message);
-  }, [error]);
+  const { mutate: logout } = useLogout({
+    onSuccess: () => toast.success('Successfully logged out!'),
+  });
+  const { isUserOptionsOpen, toggleUserOptions } = useLayoutStore();
 
   return (
     <div
-      onClick={() => setUserOptionsModal(!userOptionsModal)}
-      className={`flex justify-between items-center cursor-pointer select-none rounded-lg relative m-4 p-3 transition-all bg-secondary/80 ${userOptionsModal && 'bg-[#664343]'} text-white shadow-md backdrop-blur-md`}
+      onClick={toggleUserOptions}
+      className={`flex justify-between items-center cursor-pointer select-none rounded-lg relative m-4 p-3 transition-all bg-secondary/80 ${isUserOptionsOpen && 'bg-[#664343]'} text-white shadow-md backdrop-blur-md`}
     >
       <AnimatePresence>
-        {userOptionsModal && (
+        {isUserOptionsOpen && (
           <motion.div
             variants={modalVariants}
             key={'modal'}

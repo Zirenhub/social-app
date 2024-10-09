@@ -7,20 +7,22 @@ import ShowError from '../../../components/ShowError';
 import useAuthStore from '../../../stores/authStore';
 
 type TTabs = 'Posts' | 'Likes' | 'Comments' | 'Friends';
-const profileButtonStyle = 'grow hover:bg-gray-300 transition-all py-3';
+const tabStyle = 'grow hover:bg-gray-300 transition-all py-3';
 const tabs: TTabs[] = ['Posts', 'Likes', 'Comments', 'Friends'];
 
 function Profile() {
-  const { profile, setProfile, isMyProfile } = useProfileStore();
+  const { username } = useParams<{ username: string }>();
   const { user } = useAuthStore();
+  const { isMyProfile, setIsMyProfile } = useProfileStore();
   const [activeTab, setActiveTab] = useState<TTabs>('Posts');
-  const { username } = useParams();
 
-  const { data, isLoading, error } = useProfileQuery(username!);
+  const { data: profile, isLoading, error } = useProfileQuery(username!);
 
   useEffect(() => {
-    if (data && user) setProfile(data, user.profile.username);
-  }, [data, setProfile, user]);
+    if (profile && user) {
+      setIsMyProfile(profile.username === user.profile.username);
+    }
+  }, [user, setIsMyProfile, profile]);
 
   if (isLoading) {
     return <IsLoading />;
@@ -29,6 +31,9 @@ function Profile() {
   if (error) {
     return <ShowError message={error.message} />;
   }
+
+  const tabClassName = (tab: TTabs) =>
+    `${tabStyle} ${activeTab === tab && 'border-b-4 border-blue-500'}`;
 
   return (
     <div>
@@ -42,7 +47,7 @@ function Profile() {
                   setActiveTab(tab);
                 }}
                 key={tab}
-                className={`${profileButtonStyle} ${activeTab === tab && 'border-b-4 border-blue-500'}`}
+                className={tabClassName(tab)}
               >
                 {tab}
               </button>

@@ -24,14 +24,12 @@ const useAuthStore = create<TAuthStore>()(
 // React Query hooks
 
 export const useLogin = () => {
-  const queryClient = useQueryClient();
   const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: logInApi,
     onSuccess: (data) => {
       setUser(data);
-      queryClient.setQueryData(['user'], data);
     },
     onError: (err: ApiError) => {
       console.log(err);
@@ -40,14 +38,12 @@ export const useLogin = () => {
 };
 
 export const useSignUp = () => {
-  const queryClient = useQueryClient();
   const setUser = useAuthStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: signupApi,
     onSuccess: (data) => {
       setUser(data);
-      queryClient.setQueryData(['user'], data);
     },
     onError: (err: ApiError) => {
       console.log(err);
@@ -55,7 +51,7 @@ export const useSignUp = () => {
   });
 };
 
-export const useLogout = () => {
+export const useLogout = ({ onSuccess }: { onSuccess: () => void }) => {
   const queryClient = useQueryClient();
   const logout = useAuthStore((state) => state.logout);
 
@@ -64,6 +60,7 @@ export const useLogout = () => {
     onSuccess: () => {
       logout();
       queryClient.clear();
+      onSuccess();
     },
     onError: (err: ApiError) => {
       console.log(err);

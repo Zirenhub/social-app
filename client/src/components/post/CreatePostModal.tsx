@@ -9,12 +9,9 @@ import { useEffect } from 'react';
 import toastFormErrors from '../../utils/toastFormErrors';
 import { toast } from 'react-toastify';
 import { TPost } from '../../types/post';
+import useLayoutStore from '../../stores/layoutStore';
 
-type Props = {
-  close: () => void;
-};
-
-function CreatePostModal({ close }: Props) {
+function CreatePostModal() {
   const {
     register,
     handleSubmit,
@@ -23,20 +20,21 @@ function CreatePostModal({ close }: Props) {
     resolver: zodResolver(ZPost),
   });
 
-  const notifyPostCreated = () => {
+  const { togglePostModal } = useLayoutStore();
+
+  const postCreated = () => {
     toast.success('Successfully created post!');
-    close();
+    togglePostModal();
   };
 
-  const { mutate: createPost, error } = useCreatePost(notifyPostCreated);
+  const { mutate: createPost } = useCreatePost({
+    onSuccess: () => postCreated(),
+    onError: (errMsg: string) => toast.error(errMsg),
+  });
 
   const onSubmit: SubmitHandler<TPost> = (data) => {
     createPost(data);
   };
-
-  useEffect(() => {
-    if (error) toast.error(error.message);
-  }, [error]);
 
   useEffect(() => {
     toastFormErrors(errors);
@@ -56,7 +54,7 @@ function CreatePostModal({ close }: Props) {
         <div className="relative z-40 p-4 bg-primary rounded-xl shadow-xl text-secondary w-[500px] max-w-full">
           <div className="flex items-center justify-between mb-4">
             <button
-              onClick={close}
+              onClick={togglePostModal}
               className="text-lg text-fourth hover:text-secondary transition-colors"
             >
               X

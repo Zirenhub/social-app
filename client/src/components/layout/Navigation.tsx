@@ -1,21 +1,18 @@
-import { useState } from 'react';
 import useAuthStore from '../../stores/authStore';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import CreatePostModal from '../post/CreatePostModal';
 import UserBar from './UserBar';
+import useLayoutStore from '../../stores/layoutStore';
 
-type Props = {
-  toggleNotifSideBar: () => void;
-};
-
-function Navigation({ toggleNotifSideBar }: Props) {
-  const [postModal, setPostModal] = useState<boolean>(false);
-
+function Navigation() {
   const user = useAuthStore((state) => state.user);
+  const { toggleNotificationsSidebar, togglePostModal, isPostModalOpen } =
+    useLayoutStore();
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
+
   const navLinks = [
     { value: 'Home', to: '/', svg: 'bg-home' },
     {
@@ -27,9 +24,9 @@ function Navigation({ toggleNotifSideBar }: Props) {
   const interactions = [
     {
       value: 'Notifications',
-      action: toggleNotifSideBar,
+      action: toggleNotificationsSidebar,
     },
-    { value: 'Create New Post', action: () => setPostModal(!postModal) },
+    { value: 'Create New Post', action: togglePostModal },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -71,9 +68,9 @@ function Navigation({ toggleNotifSideBar }: Props) {
           ))}
         </div>
       </ul>
-      {postModal && (
+      {isPostModalOpen && (
         <AnimatePresence>
-          <CreatePostModal close={() => setPostModal(false)} />
+          <CreatePostModal />
         </AnimatePresence>
       )}
       <UserBar user={user} />
