@@ -11,6 +11,9 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
         likes: true,
         comments: true,
       },
+      orderBy: {
+        createdAt: "desc", // newest first
+      },
     });
     sendSuccessResponse(res, all);
   } catch (err) {
