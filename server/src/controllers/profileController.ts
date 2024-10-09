@@ -100,16 +100,36 @@ const deleteFriendRequest = async (
 
     ensureNotSelfRequest(currentUserProfileId, requestProfile.id);
 
-    await client.friendRequest.delete({
+    const friendRequest = await client.friendRequest.findFirst({
       where: {
-        senderId_receiverId: {
-          senderId: currentUserProfileId,
-          receiverId: requestProfile.id,
-        },
+        OR: [
+          {
+            senderId: currentUserProfileId,
+            receiverId: requestProfile.id,
+          },
+          {
+            senderId: requestProfile.id,
+            receiverId: currentUserProfileId,
+          },
+        ],
       },
     });
 
-    sendSuccessResponse(res, null);
+    if (!friendRequest) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        "Friend request not found."
+      );
+    }
+
+    const deletedRequest = await client.friendRequest.delete({
+      where: {
+        id: friendRequest.id,
+      },
+      include: { sender: true },
+    });
+
+    sendSuccessResponse(res, deletedRequest);
   } catch (err) {
     next(err);
   }

@@ -12,7 +12,9 @@ const getProfileBase = (username: string) =>
 const postFriendshipRequestBase = (username: string) =>
   api.post<ApiResponse<FriendRequest>>(`/profile/${username}/friend-request`);
 const deleteFriendshipRequestBase = (username: string) =>
-  api.delete<ApiResponse<null>>(`/profile/${username}/friend-request`);
+  api.delete<ApiResponse<TFriendRequestApi>>(
+    `/profile/${username}/friend-request`
+  );
 const getFriendshipRequestsBase = () =>
   api.get<ApiResponse<TFriendRequestApi[]>>(`/profile/friend-request`);
 
