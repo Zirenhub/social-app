@@ -5,4 +5,5 @@ export type {
   Like,
   Comment,
   FriendRequest,
+  Friendship,
 } from "./prisma";

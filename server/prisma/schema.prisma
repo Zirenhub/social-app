@@ -110,7 +110,6 @@ model Friendship {
 
 model FriendRequest {
   id        Int                 @id @default(autoincrement())
-  status    FriendRequestStatus
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt
   sender    Profile             @relation("ProfileSentRequests", fields: [senderId], references: [id], onDelete: Cascade)
@@ -120,11 +119,6 @@ model FriendRequest {
 
   @@unique([senderId, receiverId])
   @@index([senderId, receiverId])
-}
-
-enum FriendRequestStatus {
-  PENDING
-  ACCEPTED
 }
 
 enum Gender {

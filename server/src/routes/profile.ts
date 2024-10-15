@@ -4,21 +4,42 @@ import profileController from "../controllers/profileController";
 
 const profileRouter: Router = Router();
 
+// Get all friend requests for the authenticated user
 profileRouter.get(
-  "/friend-request",
+  "/friend-requests",
   verifyJwt,
   profileController.getAllFriendRequests
 );
-profileRouter.get("/:username", verifyJwt, profileController.get);
+
+// Get a specific user's profile by username
+profileRouter.get("/:username", verifyJwt, profileController.getProfile);
+
+// Send a friend request to a specific user
 profileRouter.post(
-  "/:username/friend-request",
+  "/:username/friend-requests",
   verifyJwt,
-  profileController.friendRequest
+  profileController.sendFriendRequest
 );
+
+// Accept a friend request from a specific user
+profileRouter.put(
+  "/:username/friend-requests",
+  verifyJwt,
+  profileController.acceptFriendRequest
+);
+
+// Delete a friend request sent to a specific user
 profileRouter.delete(
-  "/:username/friend-request",
+  "/:username/friend-requests",
   verifyJwt,
   profileController.deleteFriendRequest
+);
+
+// Delete a friendship from a specific user
+profileRouter.delete(
+  "/:username/friendship",
+  verifyJwt,
+  profileController.deleteFriendship
 );
 
 export { profileRouter };

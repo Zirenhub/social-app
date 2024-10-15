@@ -9,6 +9,11 @@ const queryKeys = {
     'delete-friend-request',
     username,
   ],
+  acceptFriendshipRequst: (username: string) => [
+    'accept-friend-request',
+    username,
+  ],
+  deleteFriendship: (username: string) => ['delete-friendship', username],
 
   posts: ['posts'],
 };

@@ -5,29 +5,15 @@ import { motion } from 'framer-motion';
 import { scaleVariants } from '../../constants/constants';
 import IsLoading from '../IsLoading';
 import ShowError from '../ShowError';
-import { useFriendRequestsQuery } from '../../stores/notificationsStore';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteFriendshipRequestApi } from '../../api/profileApi';
-import { ApiError } from '../../api/error';
-import queryKeys from '../../constants/queryKeys';
+import {
+  useFriendRequestsQuery,
+  useRejectRequestMutation,
+} from '../../stores/notificationsStore';
 
 function Notifications() {
   const { data, isLoading, isError, error } = useFriendRequestsQuery();
-  const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationKey: ['notifications-reject-request'],
-    mutationFn: deleteFriendshipRequestApi,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.allFriendRequests });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.profile(data.sender.username),
-      });
-    },
-    onError: (err: ApiError) => {
-      console.error(err.message);
-    },
-  });
+  const { mutate: rejectRequest } = useRejectRequestMutation();
 
   if (isLoading) return <IsLoading />;
   if (isError) return <ShowError message={error.message} />;
@@ -68,7 +54,7 @@ function Notifications() {
               <ProfileActionBtn
                 label="Delete"
                 className="bg-red-400 hover:bg-red-500"
-                onClick={() => mutation.mutate(request.sender.username)}
+                onClick={() => rejectRequest(request.sender.username)}
               />
             </div>
           </div>

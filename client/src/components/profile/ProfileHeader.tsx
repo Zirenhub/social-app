@@ -2,6 +2,7 @@ import { TProfileApi } from 'shared';
 import { format } from 'date-fns';
 import ProfilePicture from './ProfilePicture';
 import {
+  useAcceptFriendshipRequestMutation,
   useDeleteFriendshipRequestMutation,
   useFriendshipRequestMutation,
 } from '../../stores/profileStore';
@@ -32,7 +33,18 @@ function ProfileHeader({ profile, isMyProfile }: Props) {
       },
     });
 
+  const { mutate: acceptRequest, isPending: acceptIsPending } =
+    useAcceptFriendshipRequestMutation({
+      username: profile.username,
+      callbacks: {
+        onSuccess: () => toast.success('Friend request accepted!'),
+        onError: (errorMsg: string) => toast.error(errorMsg),
+      },
+    });
+
   const renderActionButton = () => {
+    console.log(profile);
+    const { status } = profile.friendshipStatus;
     if (isMyProfile) {
       return (
         <ProfileActionBtn
@@ -41,53 +53,68 @@ function ProfileHeader({ profile, isMyProfile }: Props) {
         />
       );
     }
-    if (requestIsPending || cancelIsPending) {
+    if (requestIsPending) {
       return (
         <ProfileActionBtn
-          label={requestIsPending ? 'Request is pending...' : 'Canceling...'}
-          className={
-            requestIsPending
-              ? 'bg-green-400 hover:bg-blue-500'
-              : 'bg-red-400 hover:bg-red-500'
-          }
+          label="Request is pending..."
+          className="bg-green-400 hover:bg-blue-500"
           disabled={true}
         />
       );
     }
-    switch (profile.friendshipStatus.status) {
-      case 'NOT_FRIENDS':
-        return (
-          <ProfileActionBtn
-            label="Add Friend"
-            className="bg-blue-400 hover:bg-red-400"
-            onClick={request}
-          />
-        );
-      case 'RECEIVED_REQUEST':
-        return (
-          <ProfileActionBtn
-            label="Delete Request"
-            className="bg-red-400 hover:bg-red-500"
-            onClick={deleteRequest}
-          />
-        );
-      case 'FRIENDS':
-        return (
-          <ProfileActionBtn
-            label="Friend"
-            className="bg-blue-400 hover:bg-red-400"
-          />
-        );
-      case 'SENT_REQUEST':
-        return (
-          <ProfileActionBtn
-            label="Accept Request"
-            className="bg-green-400 hover:bg-blue-400"
-          />
-        );
-      default:
-        return null;
+    if (cancelIsPending) {
+      return (
+        <ProfileActionBtn
+          label="Canceling..."
+          className="bg-red-400 hover:bg-red-500"
+          disabled={true}
+        />
+      );
     }
+    if (acceptIsPending) {
+      return (
+        <ProfileActionBtn
+          label="Accepting request..."
+          className="bg-blue-400 hover:bg-blue-500"
+          disabled={true}
+        />
+      );
+    }
+
+    if (status === 'REQUEST_SENT') {
+      return (
+        <ProfileActionBtn
+          label="Delete Request"
+          className="bg-red-400 hover:bg-red-500"
+          onClick={deleteRequest}
+        />
+      );
+    }
+    if (status === 'RECEIVED_REQUEST') {
+      return (
+        <ProfileActionBtn
+          label="Accept Request"
+          className="bg-green-400 hover:bg-blue-400"
+          onClick={acceptRequest}
+        />
+      );
+    }
+    if (status === 'FRIENDS') {
+      return (
+        <ProfileActionBtn
+          label="Friends"
+          className="bg-blue-400 hover:bg-red-400 hover"
+          onHoverLabel="Remove friendship"
+        />
+      );
+    }
+    return (
+      <ProfileActionBtn
+        label="Add Friend"
+        className="bg-blue-400 hover:bg-red-400"
+        onClick={request}
+      />
+    );
   };
 
   const joinedDate = new Date(profile.createdAt);

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 type TActionButtonProps = {
@@ -6,6 +7,7 @@ type TActionButtonProps = {
   onClick?: () => void;
   disabled?: boolean;
   ariaLabel?: string;
+  onHoverLabel?: string;
 };
 
 function ProfileActionBtn({
@@ -14,11 +16,16 @@ function ProfileActionBtn({
   onClick,
   disabled = false,
   ariaLabel,
+  onHoverLabel,
 }: TActionButtonProps) {
+  const [isHovering, setIsHovering] = useState<boolean>(false);
+
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      onMouseOver={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       aria-label={ariaLabel || label}
       className={twMerge(
         'text-sm text-primary rounded-lg py-1 px-3 transition-all',
@@ -26,7 +33,7 @@ function ProfileActionBtn({
         className
       )}
     >
-      {label}
+      {isHovering && onHoverLabel ? onHoverLabel : label}
     </button>
   );
 }

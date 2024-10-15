@@ -1,88 +1,61 @@
 import { Request, Response, NextFunction } from "express";
 import { sendSuccessResponse } from "../utils/responseHandler";
-import {
-  fetchProfileByUsername,
-  validateCurrentUserProfile,
-  ensureNotSelfRequest,
-  canSendFriendRequest,
-  getFriendshipStatus,
-} from "../utils/profileUtils";
-import client from "../prisma";
 import { HttpException } from "../exceptions/error";
 import { HTTP_RESPONSE_CODE } from "../constants/constant";
-import { TProfileApi } from "@shared";
+import client from "../prisma";
+import {
+  ensureNotSelfRequest,
+  fetchProfileByUsername,
+  getFriendshipStatus,
+  validateCurrentUserProfile,
+} from "../utils/profileUtils";
 
-const get = async (req: Request, res: Response, next: NextFunction) => {
+const getProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const username = req.params.username;
-    const currentUserProfileId = validateCurrentUserProfile(req.user);
-
-    const profile = await client.profile.findUniqueOrThrow({
-      where: { username },
-      include: {
-        receivedRequests: {
-          where: {
-            senderId: currentUserProfileId,
-            status: "PENDING",
-          },
-          select: { id: true, status: true },
-        },
-        sentRequests: {
-          where: {
-            receiverId: currentUserProfileId,
-            status: "PENDING",
-          },
-          select: { id: true, status: true },
-        },
-      },
-      omit: { userId: true },
-    });
-
-    const { receivedRequests, sentRequests, ...profileData } = profile;
-
-    const friendshipStatus = getFriendshipStatus(
-      receivedRequests,
-      sentRequests
+    const { username } = req.params;
+    const currentUserProfile = validateCurrentUserProfile(req.user);
+    const profile = await fetchProfileByUsername(
+      username,
+      currentUserProfile.id
     );
-
-    sendSuccessResponse(res, { ...profileData, friendshipStatus });
+    sendSuccessResponse(res, getFriendshipStatus(profile));
   } catch (err) {
     next(err);
   }
 };
 
-const friendRequest = async (
+const sendFriendRequest = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const requestUsername = req.params.username;
-    const requestProfile = await fetchProfileByUsername(requestUsername);
-    const currentUserProfileId = validateCurrentUserProfile(req.user);
+    const currentUserProfile = validateCurrentUserProfile(req.user);
+    const { username: requestUsername } = req.params;
+    ensureNotSelfRequest(currentUserProfile.username, requestUsername);
 
-    ensureNotSelfRequest(currentUserProfileId, requestProfile.id);
-    const canSend = await canSendFriendRequest(
-      currentUserProfileId,
-      requestProfile.id
+    const requestProfile = await fetchProfileByUsername(
+      requestUsername,
+      currentUserProfile.id
     );
+    const profileWithFriendship = getFriendshipStatus(requestProfile);
 
-    if (!canSend) {
+    if (profileWithFriendship.friendshipStatus.status !== "NOT_FRIENDS") {
       throw new HttpException(
         HTTP_RESPONSE_CODE.BAD_REQUEST,
-        "A friend request already exists."
+        "A relationship already exists."
       );
     }
 
-    const friendshipRequest = await client.friendRequest.create({
-      data: {
-        status: "PENDING",
-        senderId: currentUserProfileId,
-        receiverId: requestProfile.id,
-      },
+    const sentRequest = await client.friendRequest.create({
+      data: { senderId: currentUserProfile.id, receiverId: requestProfile.id },
     });
 
-    sendSuccessResponse(res, friendshipRequest);
+    profileWithFriendship.friendshipStatus = {
+      status: "RECEIVED_REQUEST",
+      requestId: sentRequest.id,
+    };
+    sendSuccessResponse(res, profileWithFriendship);
   } catch (err) {
     next(err);
   }
@@ -94,42 +67,122 @@ const deleteFriendRequest = async (
   next: NextFunction
 ) => {
   try {
-    const requestUsername = req.params.username;
-    const requestProfile = await fetchProfileByUsername(requestUsername);
-    const currentUserProfileId = validateCurrentUserProfile(req.user);
+    const currentUserProfile = validateCurrentUserProfile(req.user);
+    const { username: requestUsername } = req.params;
+    ensureNotSelfRequest(currentUserProfile.username, requestUsername);
 
-    ensureNotSelfRequest(currentUserProfileId, requestProfile.id);
+    const requestProfile = await fetchProfileByUsername(
+      requestUsername,
+      currentUserProfile.id
+    );
+    const profileWithFriendship = getFriendshipStatus(requestProfile);
 
-    const friendRequest = await client.friendRequest.findFirst({
-      where: {
-        OR: [
-          {
-            senderId: currentUserProfileId,
-            receiverId: requestProfile.id,
-          },
-          {
-            senderId: requestProfile.id,
-            receiverId: currentUserProfileId,
-          },
-        ],
-      },
-    });
-
-    if (!friendRequest) {
+    if (
+      !profileWithFriendship.friendshipStatus.requestId ||
+      !["RECEIVED_REQUEST", "REQUEST_SENT"].includes(
+        profileWithFriendship.friendshipStatus.status
+      )
+    ) {
       throw new HttpException(
         HTTP_RESPONSE_CODE.NOT_FOUND,
         "Friend request not found."
       );
     }
 
-    const deletedRequest = await client.friendRequest.delete({
-      where: {
-        id: friendRequest.id,
-      },
-      include: { sender: true },
+    await client.friendRequest.delete({
+      where: { id: profileWithFriendship.friendshipStatus.requestId },
     });
 
-    sendSuccessResponse(res, deletedRequest);
+    profileWithFriendship.friendshipStatus = {
+      status: "NOT_FRIENDS",
+      requestId: null,
+    };
+    sendSuccessResponse(res, profileWithFriendship);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const acceptFriendRequest = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const currentUserProfile = validateCurrentUserProfile(req.user);
+    const { username: requestUsername } = req.params;
+    ensureNotSelfRequest(currentUserProfile.username, requestUsername);
+
+    const requestProfile = await fetchProfileByUsername(
+      requestUsername,
+      currentUserProfile.id
+    );
+    const profileWithFriendship = getFriendshipStatus(requestProfile);
+
+    if (
+      !profileWithFriendship.friendshipStatus.requestId ||
+      profileWithFriendship.friendshipStatus.status !== "RECEIVED_REQUEST"
+    ) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        "Friend request not found."
+      );
+    }
+
+    const { requestId } = profileWithFriendship.friendshipStatus;
+
+    const newFriendship = await client.$transaction(async (tx) => {
+      await tx.friendRequest.delete({ where: { id: requestId } });
+      return tx.friendship.create({
+        data: { profileId: currentUserProfile.id, friendId: requestProfile.id },
+      });
+    });
+
+    profileWithFriendship.friendshipStatus = {
+      status: "FRIENDS",
+      requestId: newFriendship.id,
+    };
+    sendSuccessResponse(res, profileWithFriendship);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const deleteFriendship = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const currentUserProfile = validateCurrentUserProfile(req.user);
+    const { username: requestUsername } = req.params;
+    ensureNotSelfRequest(currentUserProfile.username, requestUsername);
+
+    const requestProfile = await fetchProfileByUsername(
+      requestUsername,
+      currentUserProfile.id
+    );
+    const profileWithFriendship = getFriendshipStatus(requestProfile);
+
+    if (
+      !profileWithFriendship.friendshipStatus.requestId ||
+      profileWithFriendship.friendshipStatus.status !== "FRIENDS"
+    ) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        "Friendship not found."
+      );
+    }
+
+    await client.friendship.delete({
+      where: { id: profileWithFriendship.friendshipStatus.requestId },
+    });
+
+    profileWithFriendship.friendshipStatus = {
+      status: "NOT_FRIENDS",
+      requestId: null,
+    };
+    sendSuccessResponse(res, profileWithFriendship);
   } catch (err) {
     next(err);
   }
@@ -141,9 +194,9 @@ const getAllFriendRequests = async (
   next: NextFunction
 ) => {
   try {
-    const currentUserProfileId = validateCurrentUserProfile(req.user);
+    const currentUserProfile = validateCurrentUserProfile(req.user);
     const allFriendRequests = await client.friendRequest.findMany({
-      where: { receiverId: currentUserProfileId },
+      where: { receiverId: currentUserProfile.id },
       include: { sender: { omit: { userId: true } } },
     });
 
@@ -154,8 +207,10 @@ const getAllFriendRequests = async (
 };
 
 export default {
-  get,
-  friendRequest,
+  getProfile,
+  sendFriendRequest,
   deleteFriendRequest,
   getAllFriendRequests,
+  acceptFriendRequest,
+  deleteFriendship,
 };

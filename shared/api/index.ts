@@ -1,34 +1,28 @@
 import type { ApiResponse } from "./apiResponse";
 import { User, Profile, Post, Like, Comment, FriendRequest } from "../types";
 
-type TProfileBase = Omit<Profile, "userId">;
-type EFriendshipStatus =
-  | "FRIENDS"
-  | "RECEIVED_REQUEST"
-  | "SENT_REQUEST"
-  | "NOT_FRIENDS";
 type TFriendshipStatus = {
-  status: EFriendshipStatus;
+  status: "NOT_FRIENDS" | "FRIENDS" | "REQUEST_SENT" | "RECEIVED_REQUEST";
   requestId: number | null;
 };
 
-// types of the responses, responded by api
+type TProfileBase = Omit<Profile, "userId">;
+type TProfileApi = TProfileBase & { friendshipStatus: TFriendshipStatus };
+
 type TAuthUserApi = Omit<User, "passwordHash"> & { profile: Profile };
 type TPostApi = Post & {
-  profile: TProfileBase;
+  profile: TProfileApi;
   likes: Like[];
   comments: Comment[];
 };
-type TProfileApi = Omit<Profile, "userId"> & {
-  friendshipStatus: TFriendshipStatus;
-};
-type TFriendRequestApi = FriendRequest & { sender: TProfileBase };
+type TFriendRequestApi = FriendRequest & { sender: TProfileApi };
 
 export {
   ApiResponse,
   TAuthUserApi,
   TProfileApi,
   TPostApi,
-  TFriendshipStatus,
   TFriendRequestApi,
+  TProfileBase,
+  TFriendshipStatus,
 };
