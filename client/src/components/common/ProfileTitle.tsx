@@ -18,7 +18,7 @@ function ProfileTitle({ identifiers, styles }: Props) {
 
   return (
     <div
-      onClick={() => navigate(identifiers.username)}
+      onClick={() => navigate(`/${identifiers.username}`)}
       className={twMerge(
         'text-secondary flex gap-2 items-center font-bold hover:underline underline-offset-4',
         styles?.names
