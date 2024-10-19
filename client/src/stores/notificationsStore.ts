@@ -19,14 +19,15 @@ export const useRejectRequestMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: ['notifications'],
+    mutationKey: ['notifications', 'reject'],
     mutationFn: deleteFriendshipRequestApi,
     onSuccess: (data) => {
       queryClient.setQueryData(
         queryKeys.allFriendRequests,
         (oldData: TFriendRequestApi[]) => {
           return oldData.filter((req) => {
-            return req.id !== data.friendshipStatus.requestId;
+            // remove the request that has the senderId as the rejected profile's id
+            return req.senderId !== data.id;
           });
         }
       );
