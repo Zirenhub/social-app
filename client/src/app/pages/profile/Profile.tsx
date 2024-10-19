@@ -50,7 +50,6 @@ function Profile() {
       case 'Posts':
         if (postsIsLoading) return <IsLoading />;
         if (postsIsError) return <ShowError message={postsIsError.message} />;
-        console.log(posts);
         if (posts?.length) {
           return posts.map((post) => (
             <PostContainer key={post.id} post={post} />

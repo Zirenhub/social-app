@@ -1,4 +1,4 @@
-import { ApiResponse, TFriendRequestApi, TPostApi, TProfileApi } from 'shared';
+import { ApiResponse, TFriendRequestApi, TProfileApi } from 'shared';
 import api from '../app/axios';
 import { errorHandler } from './errorHandler';
 
@@ -20,16 +20,12 @@ const acceptFriendshipRequestBase = (username: string) =>
 const deleteFriendshipBase = (username: string) =>
   api.delete<ApiResponse<TProfileApi>>(`/profile/${username}/friendship`);
 
-const getProfilePostsBase = (username: string) =>
-  api.get<ApiResponse<TPostApi[]>>(`/post/${username}`);
-
 const getProfileApi = errorHandler(getProfileBase);
 const postFriendshipRequestApi = errorHandler(postFriendshipRequestBase);
 const deleteFriendshipRequestApi = errorHandler(deleteFriendshipRequestBase);
 const getFriendshipRequestsApi = errorHandler(getFriendshipRequestsBase);
 const acceptFriendshipRequestApi = errorHandler(acceptFriendshipRequestBase);
 const deleteFriendshipApi = errorHandler(deleteFriendshipBase);
-const getProfilePostsApi = errorHandler(getProfilePostsBase);
 
 export {
   getProfileApi,
@@ -38,5 +34,4 @@ export {
   getFriendshipRequestsApi,
   acceptFriendshipRequestApi,
   deleteFriendshipApi,
-  getProfilePostsApi,
 };

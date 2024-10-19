@@ -6,9 +6,9 @@ import {
   deleteFriendshipApi,
   deleteFriendshipRequestApi,
   getProfileApi,
-  getProfilePostsApi,
   postFriendshipRequestApi,
 } from '../api/profileApi';
+import { getProfilePostsApi } from '../api/postApi';
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
 import { TPostApi, TProfileApi } from 'shared';
