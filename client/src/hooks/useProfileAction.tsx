@@ -2,6 +2,7 @@ import { toast } from 'react-toastify';
 import { TProfileApi } from 'shared';
 import {
   useAcceptFriendshipRequestMutation,
+  useDeleteFriendshipMutation,
   useDeleteFriendshipRequestMutation,
   useFriendshipRequestMutation,
 } from '../stores/profileStore';
@@ -13,20 +14,28 @@ type Props = {
 };
 
 function useProfileAction({ profile, isMyProfile }: Props) {
-  const requestMutation = useFriendshipRequestMutation({
-    onSuccess: () => toast.success('Friend request sent!'),
-    onError: (errorMsg: string) => toast.error(errorMsg),
-  });
+  const makeCallbacks = (onSuccessMsg: string) => {
+    return {
+      onSuccess: () => toast.success(onSuccessMsg),
+      onError: (errorMsg: string) => toast.error(errorMsg),
+    };
+  };
 
-  const rejectMutation = useDeleteFriendshipRequestMutation({
-    onSuccess: () => toast.success('Friend deleted!'),
-    onError: (errorMsg: string) => toast.error(errorMsg),
-  });
+  const requestMutation = useFriendshipRequestMutation(
+    makeCallbacks('Friend request sent!')
+  );
 
-  const acceptMutation = useAcceptFriendshipRequestMutation({
-    onSuccess: () => toast.success('Friend request accepted!'),
-    onError: (errorMsg: string) => toast.error(errorMsg),
-  });
+  const rejectMutation = useDeleteFriendshipRequestMutation(
+    makeCallbacks('Friend request deleted!')
+  );
+
+  const acceptMutation = useAcceptFriendshipRequestMutation(
+    makeCallbacks('Friend request accepted!')
+  );
+
+  const deleteMutation = useDeleteFriendshipMutation(
+    makeCallbacks('Friendship deleted!')
+  );
 
   const renderActionButton = () => {
     const { status } = profile.friendshipStatus;
@@ -61,7 +70,7 @@ function useProfileAction({ profile, isMyProfile }: Props) {
           disabled
         />
       );
-
+    // deleteMutation is pending
     switch (status) {
       case 'REQUEST_SENT':
         return (
@@ -85,6 +94,7 @@ function useProfileAction({ profile, isMyProfile }: Props) {
             label="Friends"
             className="bg-blue-400 hover:bg-red-400 hover"
             onHoverLabel="Remove friendship"
+            onClick={() => deleteMutation.mutate(profile.username)}
           />
         );
       default:
