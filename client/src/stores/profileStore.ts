@@ -12,15 +12,15 @@ import {
 import { getProfilePostsApi } from '../api/postApi';
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
-import { TPostApi, TProfileApi } from 'shared';
+import { TFriendRequestApi, TPostApi, TProfileApi } from 'shared';
 
 type TProfileStore = {
   isMyProfile: boolean;
   setIsMyProfile: (isMyProfile: boolean) => void;
 };
 type TMutations = {
-  onSuccess: () => void;
-  onError: (errMsg: string) => void;
+  onSuccess?: () => void;
+  onError?: (errMsg: string) => void;
 };
 
 const useProfileStore = create<TProfileStore>()(
@@ -66,11 +66,11 @@ export const useFriendshipRequestMutation = ({
     mutationFn: postFriendshipRequestApi,
     onSuccess: (data) => {
       queryClient.setQueryData(queryKeys.profile(data.username), data);
-      onSuccess();
+      if (onSuccess) onSuccess();
     },
     onError: (err: ApiError) => {
       console.error(err.message);
-      onError(err.message);
+      if (onError) onError(err.message);
     },
   });
 };
@@ -84,12 +84,21 @@ export const useDeleteFriendshipRequestMutation = ({
   return useMutation({
     mutationFn: deleteFriendshipRequestApi,
     onSuccess: (data) => {
+      queryClient.setQueryData(
+        queryKeys.allFriendRequests,
+        (oldData: TFriendRequestApi[]) => {
+          return oldData.filter((req) => {
+            // remove the request that has the senderId as the rejected profile's id
+            return req.senderId !== data.id;
+          });
+        }
+      );
       queryClient.setQueryData(queryKeys.profile(data.username), data);
-      onSuccess();
+      if (onSuccess) onSuccess();
     },
     onError: (err: ApiError) => {
       console.error(err.message);
-      onError(err.message);
+      if (onError) onError(err.message);
     },
   });
 };
@@ -104,11 +113,11 @@ export const useAcceptFriendshipRequestMutation = ({
     mutationFn: acceptFriendshipRequestApi,
     onSuccess: (data) => {
       queryClient.setQueryData(queryKeys.profile(data.username), data);
-      onSuccess();
+      if (onSuccess) onSuccess();
     },
     onError: (err: ApiError) => {
       console.error(err.message);
-      onError(err.message);
+      if (onError) onError(err.message);
     },
   });
 };
@@ -123,11 +132,11 @@ export const useDeleteFriendshipMutation = ({
     mutationFn: deleteFriendshipApi,
     onSuccess: (data) => {
       queryClient.setQueryData(queryKeys.profile(data.username), data);
-      onSuccess();
+      if (onSuccess) onSuccess();
     },
     onError: (err: ApiError) => {
       console.error(err.message);
-      onError(err.message);
+      if (onError) onError(err.message);
     },
   });
 };
