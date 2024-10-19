@@ -7,8 +7,12 @@ import useLayoutStore from '../../stores/layoutStore';
 
 function Navigation() {
   const user = useAuthStore((state) => state.user);
-  const { toggleNotificationsSidebar, togglePostModal, isPostModalOpen } =
-    useLayoutStore();
+  const {
+    toggleNotificationsSidebar,
+    togglePostModal,
+    isPostModalOpen,
+    isNotificationsSidebarOpen,
+  } = useLayoutStore();
 
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -24,9 +28,14 @@ function Navigation() {
   const interactions = [
     {
       value: 'Notifications',
+      isActive: isNotificationsSidebarOpen,
       action: toggleNotificationsSidebar,
     },
-    { value: 'Create New Post', action: togglePostModal },
+    {
+      value: 'Create New Post',
+      isActive: isPostModalOpen,
+      action: togglePostModal,
+    },
   ];
 
   const isCurrentPath = (path: string) => {
@@ -61,7 +70,7 @@ function Navigation() {
             <button
               key={interaction.value}
               onClick={interaction.action}
-              className="text-lg bg-primary text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105 hover:bg-fourth hover:text-primary"
+              className={`${interaction.isActive ? 'bg-red-400 ' : 'bg-primary '}text-lg text-fourth shadow-md px-4 py-3 rounded-full cursor-pointer transition-all transform hover:scale-105 hover:bg-fourth hover:text-primary`}
             >
               {interaction.value}
             </button>

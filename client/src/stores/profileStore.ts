@@ -6,11 +6,12 @@ import {
   deleteFriendshipApi,
   deleteFriendshipRequestApi,
   getProfileApi,
+  getProfilePostsApi,
   postFriendshipRequestApi,
 } from '../api/profileApi';
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
-import { TProfileApi } from 'shared';
+import { TPostApi, TProfileApi } from 'shared';
 
 type TProfileStore = {
   isMyProfile: boolean;
@@ -34,6 +35,14 @@ export const useProfileQuery = (username: string) => {
   return useQuery<TProfileApi, ApiError>({
     queryKey: queryKeys.profile(username),
     queryFn: () => getProfileApi(username),
+    retry: false,
+  });
+};
+
+export const useProfilePostsQuery = (username: string) => {
+  return useQuery<TPostApi[], ApiError>({
+    queryKey: queryKeys.profilePosts(username),
+    queryFn: () => getProfilePostsApi(username),
     retry: false,
   });
 };

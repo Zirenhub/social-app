@@ -16,6 +16,7 @@ const queryKeys = {
   deleteFriendship: (username: string) => ['delete-friendship', username],
 
   posts: ['posts'],
+  profilePosts: (username: string) => ['posts', username],
 };
 
 export default queryKeys;
