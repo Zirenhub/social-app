@@ -5,15 +5,45 @@ import { motion } from 'framer-motion';
 import { scaleVariants } from '../../constants/constants';
 import IsLoading from '../IsLoading';
 import ShowError from '../ShowError';
+import { useFriendRequestsQuery } from '../../stores/notificationsStore';
 import {
-  useFriendRequestsQuery,
-  useRejectRequestMutation,
-} from '../../stores/notificationsStore';
+  useAcceptFriendshipRequestMutation,
+  useDeleteFriendshipRequestMutation,
+} from '../../stores/profileStore';
+import { useQueryClient } from '@tanstack/react-query';
+import queryKeys from '../../constants/queryKeys';
+import { TFriendRequestApi, TProfileApi } from 'shared';
 
 function Notifications() {
+  const queryClient = useQueryClient();
   const { data, isLoading, isError, error } = useFriendRequestsQuery();
 
-  const { mutate: rejectRequest } = useRejectRequestMutation();
+  const rejectMutation = useDeleteFriendshipRequestMutation({});
+  const acceptMutation = useAcceptFriendshipRequestMutation({});
+
+  const handleRemoveNotification = (data: TProfileApi) => {
+    queryClient.setQueryData(
+      queryKeys.allFriendRequests,
+      (oldData: TFriendRequestApi[]) => {
+        return oldData.filter((req) => {
+          // remove the request that has the senderId as the rejected profile's id
+          return req.senderId !== data.id;
+        });
+      }
+    );
+  };
+
+  const handleRejectMutation = (username: string) => {
+    rejectMutation.mutate(username, {
+      onSuccess: (data) => handleRemoveNotification(data),
+    });
+  };
+
+  const handleAcceptMutation = (username: string) => {
+    acceptMutation.mutate(username, {
+      onSuccess: (data) => handleRemoveNotification(data),
+    });
+  };
 
   if (isLoading) return <IsLoading />;
   if (isError) return <ShowError message={error.message} />;
@@ -50,11 +80,12 @@ function Notifications() {
               <ProfileActionBtn
                 label="Accept"
                 className="bg-green-400 hover:bg-blue-400"
+                onClick={() => handleAcceptMutation(request.sender.username)}
               />
               <ProfileActionBtn
                 label="Delete"
                 className="bg-red-400 hover:bg-red-500"
-                onClick={() => rejectRequest(request.sender.username)}
+                onClick={() => handleRejectMutation(request.sender.username)}
               />
             </div>
           </div>

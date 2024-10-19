@@ -12,7 +12,7 @@ import {
 import { getProfilePostsApi } from '../api/postApi';
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
-import { TFriendRequestApi, TPostApi, TProfileApi } from 'shared';
+import { TPostApi, TProfileApi } from 'shared';
 
 type TProfileStore = {
   isMyProfile: boolean;
@@ -84,15 +84,6 @@ export const useDeleteFriendshipRequestMutation = ({
   return useMutation({
     mutationFn: deleteFriendshipRequestApi,
     onSuccess: (data) => {
-      queryClient.setQueryData(
-        queryKeys.allFriendRequests,
-        (oldData: TFriendRequestApi[]) => {
-          return oldData.filter((req) => {
-            // remove the request that has the senderId as the rejected profile's id
-            return req.senderId !== data.id;
-          });
-        }
-      );
       queryClient.setQueryData(queryKeys.profile(data.username), data);
       if (onSuccess) onSuccess();
     },
