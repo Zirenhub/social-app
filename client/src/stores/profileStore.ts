@@ -6,6 +6,7 @@ import {
   deleteFriendshipApi,
   deleteFriendshipRequestApi,
   getProfileApi,
+  getProfileFriendshipsApi,
   postFriendshipRequestApi,
 } from '../api/profileApi';
 import { getProfilePostsApi } from '../api/postApi';
@@ -18,8 +19,8 @@ type TProfileStore = {
   setIsMyProfile: (isMyProfile: boolean) => void;
 };
 type TMutations = {
-  username: string;
-  callbacks: { onSuccess: () => void; onError: (errMsg: string) => void };
+  onSuccess: () => void;
+  onError: (errMsg: string) => void;
 };
 
 const useProfileStore = create<TProfileStore>()(
@@ -47,82 +48,86 @@ export const useProfilePostsQuery = (username: string) => {
   });
 };
 
+export const useProfileFriendshipsQuery = (username: string) => {
+  return useQuery({
+    queryKey: queryKeys.profileFriendships(username),
+    queryFn: () => getProfileFriendshipsApi(username),
+    retry: false,
+  });
+};
+
 export const useFriendshipRequestMutation = ({
-  username,
-  callbacks,
+  onSuccess,
+  onError,
 }: TMutations) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: queryKeys.postFriendshipRequest(username),
-    mutationFn: () => postFriendshipRequestApi(username),
+    mutationFn: postFriendshipRequestApi,
     onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.profile(username), data);
-      callbacks.onSuccess();
+      queryClient.setQueryData(queryKeys.profile(data.username), data);
+      onSuccess();
     },
     onError: (err: ApiError) => {
       console.error(err.message);
-      callbacks.onError(err.message);
+      onError(err.message);
     },
   });
 };
 
 export const useDeleteFriendshipRequestMutation = ({
-  username,
-  callbacks,
+  onSuccess,
+  onError,
 }: TMutations) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: queryKeys.deleteFriendshipRequest(username),
-    mutationFn: () => deleteFriendshipRequestApi(username),
+    mutationFn: deleteFriendshipRequestApi,
     onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.profile(username), data);
-      callbacks.onSuccess();
+      queryClient.setQueryData(queryKeys.profile(data.username), data);
+      onSuccess();
     },
     onError: (err: ApiError) => {
       console.error(err.message);
-      callbacks.onError(err.message);
+      onError(err.message);
     },
   });
 };
 
 export const useAcceptFriendshipRequestMutation = ({
-  username,
-  callbacks,
+  onSuccess,
+  onError,
 }: TMutations) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: queryKeys.acceptFriendshipRequst(username),
-    mutationFn: () => acceptFriendshipRequestApi(username),
+    mutationFn: acceptFriendshipRequestApi,
     onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.profile(username), data);
-      callbacks.onSuccess();
+      queryClient.setQueryData(queryKeys.profile(data.username), data);
+      onSuccess();
     },
     onError: (err: ApiError) => {
       console.error(err.message);
-      callbacks.onError(err.message);
+      onError(err.message);
     },
   });
 };
 
 export const useDeleteFriendshipMutation = ({
-  username,
-  callbacks,
+  onSuccess,
+  onError,
 }: TMutations) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationKey: queryKeys.deleteFriendship(username),
-    mutationFn: () => deleteFriendshipApi(username),
+    mutationFn: deleteFriendshipApi,
     onSuccess: (data) => {
-      queryClient.setQueryData(queryKeys.profile(username), data);
-      callbacks.onSuccess();
+      queryClient.setQueryData(queryKeys.profile(data.username), data);
+      onSuccess();
     },
     onError: (err: ApiError) => {
       console.error(err.message);
-      callbacks.onError(err.message);
+      onError(err.message);
     },
   });
 };

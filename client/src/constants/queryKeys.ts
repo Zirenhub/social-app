@@ -1,22 +1,10 @@
 const queryKeys = {
   profile: (username: string) => ['profile', username],
+  profilePosts: (username: string) => ['profile-posts', username],
+  profileFriendships: (username: string) => ['profile-friendships', username],
   allFriendRequests: ['friend-requests'],
-  postFriendshipRequest: (username: string) => [
-    'post-friend-request',
-    username,
-  ],
-  deleteFriendshipRequest: (username: string) => [
-    'delete-friend-request',
-    username,
-  ],
-  acceptFriendshipRequst: (username: string) => [
-    'accept-friend-request',
-    username,
-  ],
-  deleteFriendship: (username: string) => ['delete-friendship', username],
 
   posts: ['posts'],
-  profilePosts: (username: string) => ['posts', username],
 };
 
 export default queryKeys;

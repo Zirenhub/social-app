@@ -13,32 +13,20 @@ type Props = {
 };
 
 function useProfileAction({ profile, isMyProfile }: Props) {
-  const { mutate: request, isPending: requestIsPending } =
-    useFriendshipRequestMutation({
-      username: profile.username,
-      callbacks: {
-        onSuccess: () => toast.success('Friend request sent!'),
-        onError: (errorMsg: string) => toast.error(errorMsg),
-      },
-    });
+  const requestMutation = useFriendshipRequestMutation({
+    onSuccess: () => toast.success('Friend request sent!'),
+    onError: (errorMsg: string) => toast.error(errorMsg),
+  });
 
-  const { mutate: deleteRequest, isPending: cancelIsPending } =
-    useDeleteFriendshipRequestMutation({
-      username: profile.username,
-      callbacks: {
-        onSuccess: () => toast.success('Friend deleted!'),
-        onError: (errorMsg: string) => toast.error(errorMsg),
-      },
-    });
+  const rejectMutation = useDeleteFriendshipRequestMutation({
+    onSuccess: () => toast.success('Friend deleted!'),
+    onError: (errorMsg: string) => toast.error(errorMsg),
+  });
 
-  const { mutate: acceptRequest, isPending: acceptIsPending } =
-    useAcceptFriendshipRequestMutation({
-      username: profile.username,
-      callbacks: {
-        onSuccess: () => toast.success('Friend request accepted!'),
-        onError: (errorMsg: string) => toast.error(errorMsg),
-      },
-    });
+  const acceptMutation = useAcceptFriendshipRequestMutation({
+    onSuccess: () => toast.success('Friend request accepted!'),
+    onError: (errorMsg: string) => toast.error(errorMsg),
+  });
 
   const renderActionButton = () => {
     const { status } = profile.friendshipStatus;
@@ -49,7 +37,7 @@ function useProfileAction({ profile, isMyProfile }: Props) {
           className="bg-secondary hover:bg-red-400"
         />
       );
-    if (requestIsPending)
+    if (requestMutation.isPending)
       return (
         <ProfileActionBtn
           label="Request is pending..."
@@ -57,7 +45,7 @@ function useProfileAction({ profile, isMyProfile }: Props) {
           disabled
         />
       );
-    if (cancelIsPending)
+    if (rejectMutation.isPending)
       return (
         <ProfileActionBtn
           label="Canceling..."
@@ -65,7 +53,7 @@ function useProfileAction({ profile, isMyProfile }: Props) {
           disabled
         />
       );
-    if (acceptIsPending)
+    if (acceptMutation.isPending)
       return (
         <ProfileActionBtn
           label="Accepting request..."
@@ -80,7 +68,7 @@ function useProfileAction({ profile, isMyProfile }: Props) {
           <ProfileActionBtn
             label="Delete Request"
             className="bg-red-400 hover:bg-red-500"
-            onClick={deleteRequest}
+            onClick={() => rejectMutation.mutate(profile.username)}
           />
         );
       case 'RECEIVED_REQUEST':
@@ -88,7 +76,7 @@ function useProfileAction({ profile, isMyProfile }: Props) {
           <ProfileActionBtn
             label="Accept Request"
             className="bg-green-400 hover:bg-blue-400"
-            onClick={acceptRequest}
+            onClick={() => acceptMutation.mutate(profile.username)}
           />
         );
       case 'FRIENDS':
@@ -104,7 +92,7 @@ function useProfileAction({ profile, isMyProfile }: Props) {
           <ProfileActionBtn
             label="Add Friend"
             className="bg-blue-400 hover:bg-red-400"
-            onClick={request}
+            onClick={() => requestMutation.mutate(profile.username)}
           />
         );
     }
