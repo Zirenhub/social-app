@@ -52,7 +52,7 @@ const sendFriendRequest = async (
     });
 
     profileWithFriendship.friendshipStatus = {
-      status: "RECEIVED_REQUEST",
+      status: "REQUEST_SENT",
       requestId: sentRequest.id,
     };
     sendSuccessResponse(res, profileWithFriendship);
@@ -206,6 +206,30 @@ const getAllFriendRequests = async (
   }
 };
 
+const getProfileFriendships = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { username: requestUsername } = req.params;
+    const profile = await client.profile.findUniqueOrThrow({
+      where: { username: requestUsername },
+      include: {
+        friendOf: { include: { profile: true } },
+        friendsAdded: { include: { friend: true } },
+      },
+    });
+
+    const { friendsAdded, friendOf } = profile;
+    const friendships = [...friendsAdded, ...friendOf];
+
+    sendSuccessResponse(res, friendships);
+  } catch (err) {
+    next(err);
+  }
+};
+
 export default {
   getProfile,
   sendFriendRequest,
@@ -213,4 +237,5 @@ export default {
   getAllFriendRequests,
   acceptFriendRequest,
   deleteFriendship,
+  getProfileFriendships,
 };
