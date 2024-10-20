@@ -216,13 +216,22 @@ const getProfileFriendships = async (
     const profile = await client.profile.findUniqueOrThrow({
       where: { username: requestUsername },
       include: {
-        friendOf: { include: { profile: true } },
-        friendsAdded: { include: { friend: true } },
+        friendOf: { include: { profile: { omit: { userId: true } } } },
+        friendsAdded: { include: { friend: { omit: { userId: true } } } },
       },
     });
 
     const { friendsAdded, friendOf } = profile;
-    const friendships = [...friendsAdded, ...friendOf];
+    const friendships = [
+      ...friendsAdded.map((friend) => {
+        const { createdAt, id, friend: profile } = friend;
+        return { createdAt, id, profile };
+      }),
+      ...friendOf.map((friend) => {
+        const { createdAt, id, profile } = friend;
+        return { createdAt, id, profile };
+      }),
+    ];
 
     sendSuccessResponse(res, friendships);
   } catch (err) {

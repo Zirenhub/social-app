@@ -42,4 +42,10 @@ profileRouter.delete(
   profileController.deleteFriendship
 );
 
+profileRouter.get(
+  "/:username/friendship",
+  verifyJwt,
+  profileController.getProfileFriendships
+);
+
 export { profileRouter };
