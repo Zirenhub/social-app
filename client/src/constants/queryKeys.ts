@@ -5,6 +5,7 @@ const queryKeys = {
   allFriendRequests: ['friend-requests'],
 
   posts: ['posts'],
+  post: (postId: string) => ['posts', postId],
 };
 
 export default queryKeys;

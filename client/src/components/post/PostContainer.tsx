@@ -4,6 +4,7 @@ import ProfilePicture from '../profile/ProfilePicture';
 import HeartIcon from '../svg/HeartIcon';
 import CommentIcon from '../svg/CommentIcon';
 import ProfileTitle from '../common/ProfileTitle';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   post: TPostApi;
@@ -11,6 +12,7 @@ type Props = {
 
 function PostContainer({ post }: Props) {
   const { firstName, lastName, username } = post.profile;
+  const navigate = useNavigate();
 
   const interactions = [
     {
@@ -25,11 +27,18 @@ function PostContainer({ post }: Props) {
     },
   ];
 
+  const handleNavigatePost = () => {
+    navigate(`/${post.profile.username}/${post.id}`);
+  };
+
   return (
-    <div className="flex flex-col border-secondary/30 border-b-2 px-3 py-2">
+    <div
+      className="flex flex-col border-secondary/30 border-b-2 px-3 py-2 cursor-pointer"
+      onClick={handleNavigatePost}
+    >
       <div className="flex gap-2">
         <ProfilePicture styles="h-12 w-12 flex-shrink-0 border-2 border-secondary/40" />
-        <div className="flex flex-col cursor-pointer">
+        <div className="flex flex-col">
           <ProfileTitle identifiers={{ firstName, lastName, username }} />
           {/* Ensure long words break and don't overflow */}
           <p

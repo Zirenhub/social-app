@@ -1,6 +1,6 @@
 import { TPostApi } from 'shared';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createPostApi, getAllPostsApi } from '../api/postApi';
+import { createPostApi, getAllPostsApi, getPostApi } from '../api/postApi';
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
 
@@ -23,6 +23,17 @@ export const useGetAllPostsQuery = () => {
     retry: false,
     select(data) {
       return correctDateArr(data);
+    },
+  });
+};
+
+export const useGetPostQuery = (username: string, postId: string) => {
+  return useQuery<TPostApi, ApiError>({
+    queryKey: queryKeys.post(postId),
+    queryFn: () => getPostApi({ username, postId }),
+    retry: false,
+    select(data) {
+      return correctDate(data);
     },
   });
 };

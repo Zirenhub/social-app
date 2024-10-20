@@ -3,6 +3,7 @@ import AuthWrapper from './wrapper/AuthWrapper';
 import Layout from '../../components/layout/Layout';
 import Home from '../pages/home/Home';
 import Profile from '../pages/profile/Profile';
+import Post from '../pages/post/Post';
 
 const router = createBrowserRouter([
   {
@@ -23,10 +24,10 @@ const router = createBrowserRouter([
                 index: true,
                 element: <Profile />,
               },
-              // {
-              //   path: 'settings',
-              //   element: <ProfileSettings />,
-              // },
+              {
+                path: ':postId',
+                element: <Post />,
+              },
             ],
           },
         ],

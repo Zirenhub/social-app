@@ -2,6 +2,13 @@ import { Prisma, Profile, ZPost } from "@shared";
 import { Request, Response, NextFunction } from "express";
 import client from "../prisma";
 import { sendSuccessResponse } from "../utils/responseHandler";
+import z from "zod";
+
+const postIdSchema = z
+  .string()
+  .regex(/^\d+$/, { message: "Post id must be a valid number" })
+  .transform((val) => parseInt(val, 10))
+  .refine((val) => val > 0, { message: "Post id must be a positive number" });
 
 const getPosts = ({ profile }: { profile?: Profile }) => {
   const filter: Prisma.PostFindManyArgs = {
@@ -65,4 +72,27 @@ const getProfilePosts = async (
   }
 };
 
-export default { create, getAll, getProfilePosts };
+const getProfilePost = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { postId } = req.params;
+    const validatedPostId = await postIdSchema.parseAsync(postId);
+    const post = await client.post.findUniqueOrThrow({
+      where: { id: validatedPostId },
+      include: {
+        profile: { omit: { userId: true } },
+        likes: true,
+        comments: true,
+      },
+    });
+
+    sendSuccessResponse(res, post);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default { create, getAll, getProfilePosts, getProfilePost };
