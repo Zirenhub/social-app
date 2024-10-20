@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ProfileHeader from '../../../components/profile/ProfileHeader';
-import useProfileStore, {
-  useProfilePostsQuery,
-  useProfileQuery,
-} from '../../../stores/profileStore';
+import useProfileStore, { useProfileQuery } from '../../../stores/profileStore';
 import IsLoading from '../../../components/IsLoading';
 import ShowError from '../../../components/ShowError';
 import useAuthStore from '../../../stores/authStore';
-import PostContainer from '../../../components/post/PostContainer';
 import ProfileTabs from '../../../components/profile/ProfileTabs';
+import ProfilePosts from '../../../components/profile/ProfilePosts';
+import ProfileFriends from '../../../components/profile/ProfileFriends';
 
 export type TTabs = 'Posts' | 'Likes' | 'Comments' | 'Friends';
 
@@ -24,12 +22,6 @@ function Profile() {
     isLoading: profileIsLoading,
     error: profileIsError,
   } = useProfileQuery(username!);
-
-  const {
-    data: posts,
-    isLoading: postsIsLoading,
-    error: postsIsError,
-  } = useProfilePostsQuery(username!);
 
   useEffect(() => {
     if (profile && user) {
@@ -48,24 +40,13 @@ function Profile() {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Posts':
-        if (postsIsLoading) return <IsLoading />;
-        if (postsIsError) return <ShowError message={postsIsError.message} />;
-        if (posts?.length) {
-          return posts.map((post) => (
-            <PostContainer key={post.id} post={post} />
-          ));
-        }
-        return (
-          <p className="text-center text-bold text-secondary text-xl mt-4">
-            No posts to show!
-          </p>
-        );
+        return <ProfilePosts username={username as string} />;
       case 'Likes':
         return <p>Likes content here</p>;
       case 'Comments':
         return <p>Comments content here</p>;
       case 'Friends':
-        return <p>Friends content here</p>;
+        return <ProfileFriends username={username as string} />;
       default:
         return null;
     }
