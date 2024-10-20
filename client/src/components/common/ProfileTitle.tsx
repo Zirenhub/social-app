@@ -1,3 +1,4 @@
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 
@@ -16,11 +17,18 @@ type Props = {
 function ProfileTitle({ identifiers, styles }: Props) {
   const navigate = useNavigate();
 
+  const handleNavigateProfile = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    e.stopPropagation();
+    navigate(`/${identifiers.username}`);
+  };
+
   return (
     <div
-      onClick={() => navigate(`/${identifiers.username}`)}
+      onClick={(e) => handleNavigateProfile(e)}
       className={twMerge(
-        'text-secondary flex gap-2 items-center font-bold hover:underline underline-offset-4',
+        'text-secondary flex gap-2 items-center font-bold hover:underline underline-offset-4 cursor-pointer',
         styles?.names
       )}
     >
