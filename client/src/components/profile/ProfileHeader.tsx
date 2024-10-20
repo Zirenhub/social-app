@@ -24,7 +24,7 @@ const ProfileHeader = ({ profile, isMyProfile }: Props) => {
       </div>
       <div className="transform translate-y-12 flex flex-col items-end justify-end">
         {renderActionButton()}
-        <p className="text-xs text-secondary/70">
+        <p className="text-xs text-secondary/70 whitespace-nowrap">
           Joined {format(new Date(profile.createdAt), 'MMMM yyyy')}
         </p>
       </div>
