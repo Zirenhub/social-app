@@ -1,10 +1,9 @@
 import { formatDistance } from 'date-fns';
 import { TPostApi } from 'shared';
 import ProfilePicture from '../profile/ProfilePicture';
-import HeartIcon from '../svg/HeartIcon';
-import CommentIcon from '../svg/CommentIcon';
 import ProfileTitle from '../common/ProfileTitle';
 import { useNavigate } from 'react-router-dom';
+import PostInteractions from './PostInteractions';
 
 type Props = {
   post: TPostApi;
@@ -13,19 +12,6 @@ type Props = {
 function PostContainer({ post }: Props) {
   const { firstName, lastName, username } = post.profile;
   const navigate = useNavigate();
-
-  const interactions = [
-    {
-      type: 'like',
-      svg: (className: string) => <HeartIcon className={className} />,
-      value: post.likes.length,
-    },
-    {
-      type: 'comment',
-      svg: (className: string) => <CommentIcon className={className} />,
-      value: post.comments.length,
-    },
-  ];
 
   const handleNavigatePost = () => {
     navigate(`/${post.profile.username}/${post.id}`);
@@ -51,15 +37,7 @@ function PostContainer({ post }: Props) {
       </div>
       <div className="flex items-center justify-between mt-2 gap-2">
         <div className="flex items-center gap-3">
-          {interactions.map((interaction) => (
-            <div
-              key={interaction.type}
-              className="flex select-none p-1 cursor-pointer rounded-md gap-1 text-secondary/60 items-center border-2 border-transparent hover:bg-red-400 hover:text-primary transition-all"
-            >
-              {interaction.svg('h-6 w-6 fill-current stroke-current')}
-              <p>{interaction.value}</p>
-            </div>
-          ))}
+          <PostInteractions comments={post.comments} likes={post.likes} />
         </div>
         <p className="text-xs text-secondary/60">
           {formatDistance(post.createdAt, new Date(), {
