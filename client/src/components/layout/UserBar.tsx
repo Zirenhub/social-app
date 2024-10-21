@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { TAuthUserApi } from 'shared';
 import useLayoutStore from '../../stores/layoutStore';
 import { toast } from 'react-toastify';
+import EllipsisIcon from '../svg/EllipsisIcon';
 
 type Props = {
   user: TAuthUserApi | null;
@@ -57,7 +58,7 @@ function UserBar({ user }: Props) {
           </span>
         </div>
       </div>
-      <div className="bg-ellipsis bg-cover bg-center h-4 w-4 ml-8"></div>
+      <EllipsisIcon className="h-4 w-4 ml-8" fill="white" />
     </div>
   );
 }
