@@ -1,8 +1,9 @@
-import { Prisma, Profile, ZPost } from "@shared";
+import { Prisma, ZPost } from "@shared";
 import { Request, Response, NextFunction } from "express";
 import client from "../prisma";
 import { sendSuccessResponse } from "../utils/responseHandler";
 import z from "zod";
+import { validateCurrentUserProfile } from "../utils/profileUtils";
 
 const postIdSchema = z
   .string()
@@ -10,27 +11,58 @@ const postIdSchema = z
   .transform((val) => parseInt(val, 10))
   .refine((val) => val > 0, { message: "Post id must be a positive number" });
 
-const getPosts = ({ profile }: { profile?: Profile }) => {
-  const filter: Prisma.PostFindManyArgs = {
-    include: {
-      profile: { omit: { userId: true } },
-      likes: true,
-      comments: true,
-    },
+// Separate filters for unique and many queries
+const getPostBaseInclude = () => ({
+  profile: { omit: { userId: true } },
+  likes: true,
+  comments: true,
+});
+
+// For findMany queries
+const getPostsFilter = (where?: Prisma.PostWhereInput) => {
+  return {
+    ...(where && { where }),
+    include: getPostBaseInclude(),
     orderBy: {
-      createdAt: "desc", // newest first
+      createdAt: Prisma.SortOrder.desc,
     },
   };
-  if (profile) {
-    filter.where = { profileId: profile.id };
-  }
+};
 
-  return client.post.findMany(filter);
+// For findUnique queries
+const getUniquePostFilter = (where: Prisma.PostWhereUniqueInput) => {
+  return {
+    where,
+    include: getPostBaseInclude(),
+  };
+};
+
+// Types for the return values
+type PostWithRelations = Prisma.PostGetPayload<
+  ReturnType<typeof getPostsFilter>
+>;
+
+const hasLiked = (post: PostWithRelations, userProfileId: number) => ({
+  ...post,
+  hasLiked: post.likes.some((like) => like.profileId === userProfileId),
+});
+
+const getPosts = async ({
+  where,
+  userProfileId,
+}: {
+  where?: Prisma.PostWhereInput;
+  userProfileId: number;
+}) => {
+  const posts = await client.post.findMany(getPostsFilter(where));
+  const postsWithHasLiked = posts.map((post) => hasLiked(post, userProfileId));
+  return postsWithHasLiked;
 };
 
 const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const all = await getPosts({});
+    const userProfile = validateCurrentUserProfile(req.user);
+    const all = await getPosts({ userProfileId: userProfile.id });
     sendSuccessResponse(res, all);
   } catch (err) {
     next(err);
@@ -40,8 +72,9 @@ const getAll = async (req: Request, res: Response, next: NextFunction) => {
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const validatedData = ZPost.parse(req.body);
+    const profile = validateCurrentUserProfile(req.user);
     const newPost = await client.post.create({
-      data: { ...validatedData, profileId: req.user!.profile.id },
+      data: { ...validatedData, profileId: profile.id },
       include: {
         profile: { omit: { userId: true } },
         likes: true,
@@ -64,7 +97,11 @@ const getProfilePosts = async (
     const profile = await client.profile.findUniqueOrThrow({
       where: { username },
     });
-    const all = await getPosts({ profile });
+    const userProfile = validateCurrentUserProfile(req.user);
+    const all = await getPosts({
+      where: { profileId: profile.id },
+      userProfileId: userProfile.id,
+    });
 
     sendSuccessResponse(res, all);
   } catch (err) {
@@ -80,19 +117,38 @@ const getProfilePost = async (
   try {
     const { postId } = req.params;
     const validatedPostId = await postIdSchema.parseAsync(postId);
-    const post = await client.post.findUniqueOrThrow({
-      where: { id: validatedPostId },
-      include: {
-        profile: { omit: { userId: true } },
-        likes: true,
-        comments: true,
-      },
-    });
+    const userProfile = validateCurrentUserProfile(req.user);
+    const post = await client.post.findUniqueOrThrow(
+      getUniquePostFilter({ id: validatedPostId })
+    );
 
-    sendSuccessResponse(res, post);
+    sendSuccessResponse(res, hasLiked(post, userProfile.id));
   } catch (err) {
     next(err);
   }
 };
 
-export default { create, getAll, getProfilePosts, getProfilePost };
+const postLike = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { postId } = req.params;
+    const profile = validateCurrentUserProfile(req.user);
+    const validatedPostId = await postIdSchema.parseAsync(postId);
+    const like = await client.like.create({
+      data: { postId: validatedPostId, profileId: profile.id },
+    });
+
+    sendSuccessResponse(res, like);
+  } catch (err) {
+    next(err);
+  }
+};
+
+const postComment = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { postId } = req.params;
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default { create, getAll, getProfilePosts, getProfilePost, postLike };
