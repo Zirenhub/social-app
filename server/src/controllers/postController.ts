@@ -47,6 +47,44 @@ const hasLiked = (post: PostWithRelations, userProfileId: number) => ({
   hasLiked: post.likes.some((like) => like.profileId === userProfileId),
 });
 
+const togglePostLike = async (postId: number, userProfileId: number) => {
+  // Use a transaction to ensure consistency
+  return await client.$transaction(async (tx) => {
+    // Find existing like
+    const existingLike = await tx.like.findUnique({
+      where: {
+        profileId_postId: {
+          profileId: userProfileId,
+          postId,
+        },
+      },
+    });
+
+    // Toggle like status
+    if (existingLike) {
+      await tx.like.delete({
+        where: {
+          id: existingLike.id,
+        },
+      });
+    } else {
+      await tx.like.create({
+        data: {
+          postId,
+          profileId: userProfileId,
+        },
+      });
+    }
+
+    // Fetch and return updated post
+    const updatedPost = await tx.post.findUniqueOrThrow({
+      ...getUniquePostFilter({ id: postId }),
+    });
+
+    return hasLiked(updatedPost, userProfileId);
+  });
+};
+
 const getPosts = async ({
   where,
   userProfileId,
@@ -133,11 +171,9 @@ const postLike = async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
     const profile = validateCurrentUserProfile(req.user);
     const validatedPostId = await postIdSchema.parseAsync(postId);
-    const like = await client.like.create({
-      data: { postId: validatedPostId, profileId: profile.id },
-    });
+    const updatedPost = await togglePostLike(validatedPostId, profile.id);
 
-    sendSuccessResponse(res, like);
+    sendSuccessResponse(res, updatedPost);
   } catch (err) {
     next(err);
   }
