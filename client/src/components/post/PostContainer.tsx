@@ -37,7 +37,7 @@ function PostContainer({ post }: Props) {
       </div>
       <div className="flex items-center justify-between mt-2 gap-2">
         <div className="flex items-center gap-3">
-          <PostInteractions comments={post.comments} likes={post.likes} />
+          <PostInteractions post={post} />
         </div>
         <p className="text-xs text-secondary/60">
           {formatDistance(post.createdAt, new Date(), {

@@ -64,7 +64,7 @@ function Post() {
           </p>
         </div>
         <p className="flex items-center gap-3 px-4 pt-1">
-          <PostInteractions comments={post.comments} likes={post.likes} />
+          <PostInteractions post={post} />
         </p>
       </>
     );
