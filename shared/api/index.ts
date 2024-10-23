@@ -25,6 +25,7 @@ type TPostApi = Post & {
   profile: TProfileApi;
   likes: Like[];
   comments: Comment[];
+  hasLiked: boolean;
 };
 type TFriendRequestApi = FriendRequest & { sender: TProfileApi };
 
