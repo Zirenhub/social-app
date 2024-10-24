@@ -24,7 +24,7 @@ function ProfileFriends({ username }: Props) {
   }
   if (friendships?.length) {
     return (
-      <div className="flex p-3 cursor-pointer">
+      <div className="grid grid-cols-3 grid-rows-4 gap-3 p-3 cursor-pointer">
         {friendships.map((friend) => {
           return (
             <div
