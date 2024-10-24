@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 
 type Props = {
@@ -17,12 +17,17 @@ type Props = {
 
 function ProfileTitle({ identifiers, styles, mode }: Props) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   const handleNavigateProfile = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     e.stopPropagation();
-    navigate(`/${identifiers.username}`);
+    const navigateTo = `/${identifiers.username}`;
+    if (pathname === navigateTo) {
+      return;
+    }
+    navigate(navigateTo);
   };
 
   return (
