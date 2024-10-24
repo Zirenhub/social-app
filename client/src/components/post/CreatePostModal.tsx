@@ -1,44 +1,10 @@
-import { SubmitHandler, useForm } from 'react-hook-form';
 import { scaleVariants } from '../../constants/constants';
-import ProfilePicture from '../profile/ProfilePicture';
 import { motion } from 'framer-motion';
-import { ZPost, postContentMaxLength } from 'shared';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreatePost } from '../../stores/postsStore';
-import { useEffect } from 'react';
-import toastFormErrors from '../../utils/toastFormErrors';
-import { toast } from 'react-toastify';
-import { TPost } from '../../types/post';
 import useLayoutStore from '../../stores/layoutStore';
+import CreatePost from './CreatePost';
 
 function CreatePostModal() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<TPost>({
-    resolver: zodResolver(ZPost),
-  });
-
   const { togglePostModal } = useLayoutStore();
-
-  const postCreated = () => {
-    toast.success('Successfully created post!');
-    togglePostModal();
-  };
-
-  const { mutate: createPost } = useCreatePost({
-    onSuccess: () => postCreated(),
-    onError: (errMsg: string) => toast.error(errMsg),
-  });
-
-  const onSubmit: SubmitHandler<TPost> = (data) => {
-    createPost(data);
-  };
-
-  useEffect(() => {
-    toastFormErrors(errors);
-  }, [errors]);
 
   return (
     <>
@@ -61,34 +27,7 @@ function CreatePostModal() {
             </button>
             <p className="font-semibold text-lg">Create a New Post!</p>
           </div>
-
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex gap-3 items-start">
-              <ProfilePicture styles="h-14 w-14 border-2 border-primary shadow-sm" />
-              <textarea
-                {...register('content')}
-                className="flex-1 bg-secondary/20 h-36 text-third placeholder-third/60 rounded-lg px-4 py-2 outline-none text-md resize-none shadow-inner"
-                placeholder="What is happening?"
-                maxLength={postContentMaxLength}
-              />
-            </div>
-            <div className="flex items-center mt-4">
-              <select
-                {...register('visibility')}
-                className="bg-transparent font-semibold"
-              >
-                <option value={'EVERYONE'}>Everyone</option>
-                <option value={'FRIENDS'}>Friends</option>
-              </select>
-              <span>can view this post.</span>
-              <button
-                type="submit"
-                className="ml-auto font-bold text-primary py-1 px-3 bg-secondary rounded-md hover:bg-secondary/40 hover:underline underline-offset-4 transition-all"
-              >
-                Post
-              </button>
-            </div>
-          </form>
+          <CreatePost onSuccessSideEffect={togglePostModal} />
         </div>
       </motion.div>
     </>
