@@ -19,7 +19,7 @@ function PostContainer({ post }: Props) {
 
   return (
     <div
-      className="flex flex-col border-secondary/30 border-b-2 px-3 py-2 cursor-pointer"
+      className="flex flex-col border-secondary/30 border-b-2 px-3 py-2 cursor-pointer hover:bg-secondary/5 transition-all"
       onClick={handleNavigatePost}
     >
       <div className="flex gap-2">

@@ -31,7 +31,7 @@ const Layout = () => {
             exit="exit"
             variants={slideAboveVariants}
             transition={{ duration: 0.5, ease: 'easeInOut' }}
-            className="bg-white/70 backdrop-blur-md shadow-xl rounded-lg h-full w-full overflow-y-auto scroll"
+            className="bg-white/70 backdrop-blur-md shadow-xl rounded-lg h-full w-full overflow-y-auto scroll relative"
           >
             <Outlet />
           </motion.div>
