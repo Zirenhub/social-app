@@ -4,10 +4,10 @@ import IsLoading from '../../../components/IsLoading';
 import ShowError from '../../../components/ShowError';
 import ProfilePicture from '../../../components/profile/ProfilePicture';
 import ProfileTitle from '../../../components/common/ProfileTitle';
-import BackIcon from '../../../components/svg/BackIcon';
 import EllipsisIcon from '../../../components/svg/EllipsisIcon';
 import { format } from 'date-fns';
 import PostInteractions from '../../../components/post/PostInteractions';
+import BackButton from '../../../components/common/BackButton';
 
 function Post() {
   const { postId, username } = useParams<{
@@ -33,9 +33,7 @@ function Post() {
     return (
       <>
         <div className="flex items-center border-b-2 border-third/20 p-3 gap-6">
-          <button className="text-secondary hover:bg-third hover:text-primary transition-all rounded-full">
-            <BackIcon className="h-8 w-8 fill-current stroke-current" />
-          </button>
+          <BackButton />
           <p className="text-third font-bold text-xl">Post</p>
         </div>
         <div className="flex flex-col px-3 pt-3 pb-1 border-b-2 border-third/20">
