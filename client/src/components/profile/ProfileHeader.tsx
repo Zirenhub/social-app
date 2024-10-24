@@ -55,14 +55,14 @@ const ProfileHeader = ({ scrollRef, profile, isMyProfile }: Props) => {
     <>
       {/* Full Header */}
       <motion.div
-        className={`bg-green-400 rounded-t-md h-[${headerHeight}px] z-10`}
+        className={`bg-green-400 rounded-t-md h-[${headerHeight}px] z-10 mb-4`}
         ref={fullHeaderRef}
         style={{
           opacity: fullHeaderOpacity,
         }}
       >
         <BackButton className="bg-primary ml-4 mt-4" />
-        <div className="flex justify-between h-full items-end">
+        <div className="flex justify-between h-full items-end translate-y-14">
           <div className="flex items-end pl-6">
             <ProfilePicture styles="w-36 h-36 shadow-lg" />
             <div className="ml-2">
@@ -72,7 +72,7 @@ const ProfileHeader = ({ scrollRef, profile, isMyProfile }: Props) => {
               <p className="text-secondary/70">@{profile.username}</p>
             </div>
           </div>
-          <div className="flex flex-col items-end justify-end pr-6">
+          <div className="flex flex-col -translate-y-2 pr-6">
             {renderActionButton()}
             <p className="text-xs text-secondary/70 whitespace-nowrap">
               Joined {format(new Date(profile.createdAt), 'MMMM yyyy')}
@@ -83,7 +83,7 @@ const ProfileHeader = ({ scrollRef, profile, isMyProfile }: Props) => {
 
       {/* Compact Header */}
       <motion.div
-        className="bg-white/95 backdrop-blur-sm h-16 w-full flex items-center shadow-sm sticky top-0 left-0"
+        className="bg-white/95 backdrop-blur-sm w-full flex gap-3 py-2 items-center shadow-sm sticky top-0 left-0"
         ref={compactHeaderRef}
         style={{
           opacity: compactHeaderOpacity,
