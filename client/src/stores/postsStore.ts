@@ -8,6 +8,7 @@ import {
 } from '../api/postApi';
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
+import { TMutations } from '../types/store';
 
 const correctDate = (post: TPostApi) => {
   return {
@@ -43,12 +44,7 @@ export const useGetPostQuery = (username: string, postId: string) => {
   });
 };
 
-type TCreatePost = {
-  onSuccess: () => void;
-  onError: (errMsg: string) => void;
-};
-
-export const useCreatePost = ({ onSuccess, onError }: TCreatePost) => {
+export const useCreatePost = ({ onSuccess, onError }: TMutations) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -66,11 +62,11 @@ export const useCreatePost = ({ onSuccess, onError }: TCreatePost) => {
           return [correctDate(data), ...oldData];
         }
       );
-      onSuccess();
+      if (onSuccess) onSuccess();
     },
     onError: (err: ApiError) => {
       console.log(err);
-      onError(err.message);
+      if (onError) onError(err.message);
     },
   });
 };
