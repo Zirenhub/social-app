@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import ProfileHeader from '../../../components/profile/ProfileHeader';
 import useProfileStore, { useProfileQuery } from '../../../stores/profileStore';
@@ -16,6 +16,8 @@ function Profile() {
   const { username } = useParams<{ username: string }>();
   const { user } = useAuthStore();
   const { isMyProfile, setIsMyProfile } = useProfileStore();
+
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const {
     data: profile,
@@ -53,12 +55,16 @@ function Profile() {
   };
 
   return (
-    <div>
-      {profile && <ProfileHeader profile={profile} isMyProfile={isMyProfile} />}
-      <div className="pt-20">
-        <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-        {renderTabContent()}
-      </div>
+    <div style={{ overflowY: 'scroll', height: '100%' }} ref={scrollRef}>
+      {profile && (
+        <ProfileHeader
+          scrollRef={scrollRef}
+          profile={profile}
+          isMyProfile={isMyProfile}
+        />
+      )}
+      <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      {renderTabContent()}
     </div>
   );
 }
