@@ -9,6 +9,7 @@ import {
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
 import { TMutations } from '../types/store';
+import useProfileStore from './profileStore';
 
 const correctDate = (post: TPostApi) => {
   return {
@@ -62,7 +63,7 @@ export const useCreatePost = ({ onSuccess, onError }: TMutations) => {
           return [correctDate(data), ...oldData];
         }
       );
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(data);
     },
     onError: (err: ApiError) => {
       console.log(err);
@@ -73,23 +74,34 @@ export const useCreatePost = ({ onSuccess, onError }: TMutations) => {
 
 export const usePostLike = () => {
   const queryClient = useQueryClient();
+  const { profile, isMyProfile } = useProfileStore();
 
   // get context where like was fired from!
   return useMutation({
     mutationFn: createPostLikeApi,
     onSuccess: (data) => {
-      // add this post to the home page posts,
       queryClient.setQueryData(queryKeys.posts, (oldData: TPostApi[] = []) => {
         return oldData.map((post) => (post.id === data.id ? data : post));
       });
       queryClient.setQueryData(queryKeys.post(data.id), data);
-      // add this post to my profile's posts.
       queryClient.setQueryData(
         queryKeys.profilePosts(data.profile.username),
         (oldData: TPostApi[] = []) => {
           return oldData.map((post) => (post.id === data.id ? data : post));
         }
       );
+      if (profile) {
+        queryClient.setQueryData(
+          queryKeys.profileLikes(profile.username),
+          (oldData: TPostApi[] = []) => {
+            if (isMyProfile) {
+              return oldData.filter((post) => post.id !== data.id);
+            } else {
+              return oldData.map((post) => (post.id === data.id ? data : post));
+            }
+          }
+        );
+      }
     },
     onError: (err: ApiError) => {
       console.log(err);

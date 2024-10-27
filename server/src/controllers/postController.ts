@@ -187,4 +187,41 @@ const postComment = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { create, getAll, getProfilePosts, getProfilePost, postLike };
+const getProfileLikes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { username } = req.params;
+    const currentProfile = validateCurrentUserProfile(req.user);
+    const profile = await client.profile.findUniqueOrThrow({
+      where: { username },
+      include: {
+        likes: {
+          include: {
+            post: { include: { ...getPostBaseInclude() } },
+          },
+        },
+      },
+    });
+
+    const likes = profile.likes.map((like) => like.post);
+    const postsWithHasLiked = likes.map((post) =>
+      hasLiked(post, currentProfile.id)
+    );
+
+    sendSuccessResponse(res, postsWithHasLiked);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default {
+  create,
+  getAll,
+  getProfilePosts,
+  getProfilePost,
+  postLike,
+  getProfileLikes,
+};

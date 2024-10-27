@@ -8,6 +8,7 @@ import useAuthStore from '../../../stores/authStore';
 import ProfileTabs from '../../../components/profile/ProfileTabs';
 import ProfilePosts from '../../../components/profile/ProfilePosts';
 import ProfileFriends from '../../../components/profile/ProfileFriends';
+import ProfileLikes from '../../../components/profile/ProfileLikes';
 
 export type TTabs = 'Posts' | 'Likes' | 'Comments' | 'Friends';
 
@@ -15,7 +16,7 @@ function Profile() {
   const [activeTab, setActiveTab] = useState<TTabs>('Posts');
   const { username } = useParams<{ username: string }>();
   const { user } = useAuthStore();
-  const { isMyProfile, setIsMyProfile } = useProfileStore();
+  const { isMyProfile, setProfile } = useProfileStore();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -27,9 +28,9 @@ function Profile() {
 
   useEffect(() => {
     if (profile && user) {
-      setIsMyProfile(profile.username === user.profile.username);
+      setProfile(profile, user);
     }
-  }, [user, setIsMyProfile, profile]);
+  }, [user, setProfile, profile]);
 
   if (profileIsLoading) {
     return <IsLoading />;
@@ -44,7 +45,7 @@ function Profile() {
       case 'Posts':
         return <ProfilePosts username={username as string} />;
       case 'Likes':
-        return <p>Likes content here</p>;
+        return <ProfileLikes username={username as string} />;
       case 'Comments':
         return <p>Comments content here</p>;
       case 'Friends':

@@ -22,11 +22,15 @@ const createPostBase = (data: TPost) =>
 const createPostLikeBase = (postId: number) =>
   api.post<ApiResponse<TPostApi>>(`posts/like/${postId}`);
 
+const getProfileLikesBase = (username: string) =>
+  api.get<ApiResponse<TPostApi[]>>(`posts/${username}/likes`);
+
 const getAllPostsApi = errorHandler(getAllPostsBase);
 const getProfilePostsApi = errorHandler(getProfilePostsBase);
 const getPostApi = errorHandler(getPostBase);
 const createPostApi = errorHandler(createPostBase);
 const createPostLikeApi = errorHandler(createPostLikeBase);
+const getProfileLikesApi = errorHandler(getProfileLikesBase);
 
 export {
   createPostApi,
@@ -34,4 +38,5 @@ export {
   getProfilePostsApi,
   getPostApi,
   createPostLikeApi,
+  getProfileLikesApi,
 };
