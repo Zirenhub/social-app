@@ -14,21 +14,27 @@ import {
   getProfileFriendshipsApi,
   postFriendshipRequestApi,
 } from '../api/profileApi';
-import { getProfilePostsApi } from '../api/postApi';
+import { getProfileLikesApi, getProfilePostsApi } from '../api/postApi';
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
-import { TFriendRequestApi, TPostApi, TProfileApi } from 'shared';
+import { TAuthUserApi, TFriendRequestApi, TPostApi, TProfileApi } from 'shared';
 import { TMutations } from '../types/store';
 
 type TProfileStore = {
+  profile: TProfileApi | null;
   isMyProfile: boolean;
-  setIsMyProfile: (isMyProfile: boolean) => void;
+  setProfile: (profile: TProfileApi, user: TAuthUserApi) => void;
 };
 
 const useProfileStore = create<TProfileStore>()(
   devtools((set) => ({
+    profile: null,
     isMyProfile: false,
-    setIsMyProfile: (isMyProfile: boolean) => set({ isMyProfile }),
+    setProfile: (profile: TProfileApi, user: TAuthUserApi) =>
+      set({
+        profile,
+        isMyProfile: profile.id === user.profile.id,
+      }),
   }))
 );
 
@@ -84,6 +90,14 @@ export const useProfileFriendshipsQuery = (username: string) => {
   return useQuery<TProfileApi[], ApiError>({
     queryKey: queryKeys.profileFriendships(username),
     queryFn: () => getProfileFriendshipsApi(username),
+    retry: false,
+  });
+};
+
+export const useProfileLikesQuery = (username: string) => {
+  return useQuery<TPostApi[], ApiError>({
+    queryKey: queryKeys.profileLikes(username),
+    queryFn: () => getProfileLikesApi(username),
     retry: false,
   });
 };
