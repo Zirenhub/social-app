@@ -11,6 +11,8 @@ import BackButton from '../common/BackButton';
 import ProfileTitle from '../common/ProfileTitle';
 import { TProfileApi } from 'shared';
 import { format } from 'date-fns';
+import { handleRemoveNotification } from '../../stores/profileStore';
+import { useQueryClient } from '@tanstack/react-query';
 
 type Props = {
   profile: TProfileApi;
@@ -19,7 +21,10 @@ type Props = {
 };
 
 const ProfileHeader = ({ scrollRef, profile, isMyProfile }: Props) => {
-  const { renderActionButton } = useProfileAction({ profile, isMyProfile });
+  const queryClient = useQueryClient();
+  const { renderActionButton } = useProfileAction({
+    acceptMutation: (data) => handleRemoveNotification(data, queryClient),
+  });
 
   const { scrollY } = useScroll({ container: scrollRef });
   const fullHeaderRef = useRef<HTMLDivElement>(null);
@@ -72,8 +77,8 @@ const ProfileHeader = ({ scrollRef, profile, isMyProfile }: Props) => {
               <p className="text-secondary/70">@{profile.username}</p>
             </div>
           </div>
-          <div className="flex flex-col -translate-y-2 pr-6">
-            {renderActionButton()}
+          <div className="flex flex-col -translate-y-2 pr-6 items-end">
+            {renderActionButton({ profile, isMyProfile })}
             <p className="text-xs text-secondary/70 whitespace-nowrap">
               Joined {format(new Date(profile.createdAt), 'MMMM yyyy')}
             </p>

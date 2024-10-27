@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import {
@@ -27,6 +32,36 @@ const useProfileStore = create<TProfileStore>()(
   }))
 );
 
+// Helpers
+
+export const handleRemoveNotification = (
+  data: TProfileApi,
+  queryClient: QueryClient
+) => {
+  queryClient.setQueryData(
+    queryKeys.allFriendRequests,
+    (oldData: TFriendRequestApi[]) => {
+      return oldData.filter((req) => {
+        // remove the request that has the senderId as the rejected profile's id
+        return req.senderId !== data.id;
+      });
+    }
+  );
+};
+
+export const handleUpdateFriendships = (
+  data: TProfileApi,
+  profileUsername: string,
+  queryClient: QueryClient
+) => {
+  queryClient.setQueryData(
+    queryKeys.profileFriendships(profileUsername),
+    (oldData: TProfileApi[] = []) => {
+      return oldData.map((friend) => (friend.id === data.id ? data : friend));
+    }
+  );
+};
+
 // Queries
 
 export const useProfileQuery = (username: string) => {
@@ -46,7 +81,7 @@ export const useProfilePostsQuery = (username: string) => {
 };
 
 export const useProfileFriendshipsQuery = (username: string) => {
-  return useQuery({
+  return useQuery<TProfileApi[], ApiError>({
     queryKey: queryKeys.profileFriendships(username),
     queryFn: () => getProfileFriendshipsApi(username),
     retry: false,
@@ -63,7 +98,7 @@ export const useFriendshipRequestMutation = ({
     mutationFn: postFriendshipRequestApi,
     onSuccess: (data) => {
       queryClient.setQueryData(queryKeys.profile(data.username), data);
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(data);
     },
     onError: (err: ApiError) => {
       console.error(err.message);
@@ -80,12 +115,9 @@ export const useDeleteFriendshipRequestMutation = ({
 
   return useMutation({
     mutationFn: deleteFriendshipRequestApi,
-
     onSuccess: (data) => {
-      // update the profile query
       queryClient.setQueryData(queryKeys.profile(data.username), data);
-
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(data);
     },
     onError: (err: ApiError) => {
       console.error(err.message);
@@ -103,19 +135,8 @@ export const useAcceptFriendshipRequestMutation = ({
   return useMutation({
     mutationFn: acceptFriendshipRequestApi,
     onSuccess: (data) => {
-      // update the profile query
       queryClient.setQueryData(queryKeys.profile(data.username), data);
-      // remove the request from notifcations, we accepted it
-      queryClient.setQueryData(
-        queryKeys.allFriendRequests,
-        (oldData: TFriendRequestApi[]) => {
-          return oldData.filter((req) => {
-            // remove the request that has the senderId as the rejected profile's id
-            return req.senderId !== data.id;
-          });
-        }
-      );
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(data);
     },
     onError: (err: ApiError) => {
       console.error(err.message);
@@ -134,7 +155,7 @@ export const useDeleteFriendshipMutation = ({
     mutationFn: deleteFriendshipApi,
     onSuccess: (data) => {
       queryClient.setQueryData(queryKeys.profile(data.username), data);
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(data);
     },
     onError: (err: ApiError) => {
       console.error(err.message);

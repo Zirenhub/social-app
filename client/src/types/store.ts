@@ -1,5 +1,7 @@
+import { TProfileApi } from 'shared';
+
 type TMutations = {
-  onSuccess?: () => void;
+  onSuccess?: (data: TProfileApi) => void;
   onError?: (errMsg: string) => void;
 };
 

@@ -8,65 +8,88 @@ import {
 } from '../stores/profileStore';
 import ProfileActionBtn from '../components/common/ProfileActionBtn';
 
-type Props = {
+type renderProps = {
   profile: TProfileApi;
   isMyProfile: boolean;
+  className?: string;
 };
 
-function useProfileAction({ profile, isMyProfile }: Props) {
-  const makeCallbacks = (onSuccessMsg: string) => {
-    return {
-      onSuccess: () => toast.success(onSuccessMsg),
-      onError: (errorMsg: string) => toast.error(errorMsg),
-    };
+type onSuccessCallback = (data: TProfileApi) => void;
+
+type Props = {
+  requestMutation?: onSuccessCallback;
+  rejectMutation?: onSuccessCallback;
+  acceptMutation?: onSuccessCallback;
+  deleteMutation?: onSuccessCallback;
+};
+
+function useProfileAction({
+  requestMutation,
+  rejectMutation,
+  acceptMutation,
+  deleteMutation,
+}: Props) {
+  const makeCallbacks = (
+    onSuccessMsg: string,
+    callback?: onSuccessCallback
+  ) => ({
+    onSuccess: (data: TProfileApi) => {
+      toast.success(onSuccessMsg);
+      if (callback) callback(data);
+    },
+    onError: (errorMsg: string) => toast.error(errorMsg),
+  });
+
+  const request = useFriendshipRequestMutation(
+    makeCallbacks('Friend request sent!', requestMutation)
+  );
+
+  const reject = useDeleteFriendshipRequestMutation(
+    makeCallbacks('Friend request deleted!', rejectMutation)
+  );
+
+  const accept = useAcceptFriendshipRequestMutation(
+    makeCallbacks('Friend request accepted!', acceptMutation)
+  );
+
+  const _delete = useDeleteFriendshipMutation(
+    makeCallbacks('Friendship deleted!', deleteMutation)
+  );
+
+  const styles = {
+    editProfile: 'bg-secondary hover:bg-red-400',
+    acceptRequest: 'bg-green-400 hover:bg-blue-500',
+    rejectRequest: 'bg-red-400 hover:bg-red-500',
+    sendRequest: 'bg-blue-400 hover:bg-red-400',
   };
 
-  const requestMutation = useFriendshipRequestMutation(
-    makeCallbacks('Friend request sent!')
-  );
-
-  const rejectMutation = useDeleteFriendshipRequestMutation(
-    makeCallbacks('Friend request deleted!')
-  );
-
-  const acceptMutation = useAcceptFriendshipRequestMutation(
-    makeCallbacks('Friend request accepted!')
-  );
-
-  const deleteMutation = useDeleteFriendshipMutation(
-    makeCallbacks('Friendship deleted!')
-  );
-
-  const renderActionButton = () => {
+  const renderActionButton = ({ profile, isMyProfile }: renderProps) => {
     const { status } = profile.friendshipStatus;
     if (isMyProfile)
       return (
-        <ProfileActionBtn
-          label="Edit Profile"
-          className="bg-secondary hover:bg-red-400"
-        />
+        <ProfileActionBtn label="Edit Profile" className={styles.editProfile} />
       );
-    if (requestMutation.isPending)
+    if (request.isPending)
       return (
         <ProfileActionBtn
           label="Request is pending..."
-          className="bg-green-400 hover:bg-blue-500"
+          className={styles.acceptRequest}
           disabled
         />
       );
-    if (rejectMutation.isPending)
+    if (reject.isPending)
       return (
         <ProfileActionBtn
           label="Canceling..."
-          className="bg-red-400 hover:bg-red-500"
+          className={styles.rejectRequest}
           disabled
         />
       );
-    if (acceptMutation.isPending)
+    if (accept.isPending)
       return (
         <ProfileActionBtn
           label="Accepting request..."
-          className="bg-blue-400 hover:bg-blue-500"
+          className={styles.acceptRequest}
           disabled
         />
       );
@@ -76,33 +99,33 @@ function useProfileAction({ profile, isMyProfile }: Props) {
         return (
           <ProfileActionBtn
             label="Delete Request"
-            className="bg-red-400 hover:bg-red-500"
-            onClick={() => rejectMutation.mutate(profile.username)}
+            className={styles.rejectRequest}
+            onClick={() => reject.mutate(profile.username)}
           />
         );
       case 'RECEIVED_REQUEST':
         return (
           <ProfileActionBtn
             label="Accept Request"
-            className="bg-green-400 hover:bg-blue-400"
-            onClick={() => acceptMutation.mutate(profile.username)}
+            className={styles.acceptRequest}
+            onClick={() => accept.mutate(profile.username)}
           />
         );
       case 'FRIENDS':
         return (
           <ProfileActionBtn
             label="Friends"
-            className="bg-blue-400 hover:bg-red-400 hover"
+            className={styles.sendRequest}
             onHoverLabel="Remove friendship"
-            onClick={() => deleteMutation.mutate(profile.username)}
+            onClick={() => _delete.mutate(profile.username)}
           />
         );
       default:
         return (
           <ProfileActionBtn
             label="Add Friend"
-            className="bg-blue-400 hover:bg-red-400"
-            onClick={() => requestMutation.mutate(profile.username)}
+            className={styles.sendRequest}
+            onClick={() => request.mutate(profile.username)}
           />
         );
     }
