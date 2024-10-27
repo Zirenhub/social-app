@@ -16,9 +16,6 @@ type TFriendshipStatus = {
 
 type TProfileBase = Omit<Profile, "userId">;
 type TProfileApi = TProfileBase & { friendshipStatus: TFriendshipStatus };
-type TProfileFriendships = Omit<Friendship, "profileId" | "friendId"> & {
-  profile: TProfileBase;
-};
 
 type TAuthUserApi = Omit<User, "passwordHash"> & { profile: Profile };
 type TPostApi = Post & {
@@ -33,7 +30,6 @@ export {
   ApiResponse,
   TAuthUserApi,
   TProfileApi,
-  TProfileFriendships,
   TPostApi,
   TFriendRequestApi,
   TProfileBase,

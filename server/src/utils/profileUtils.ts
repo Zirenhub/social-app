@@ -1,13 +1,20 @@
 import { HttpException } from "../exceptions/error";
 import { HTTP_RESPONSE_CODE } from "../constants/constant";
-import { TAuthUserApi, TFriendshipStatus, TProfileApi } from "@shared";
+import {
+  Friendship,
+  Profile,
+  TAuthUserApi,
+  TFriendshipStatus,
+  TProfileApi,
+  TProfileBase,
+} from "@shared";
 import client from "../prisma";
-import { TGetProfile } from "../types/profile";
+import { TProfileWithRelations } from "../types/profile";
 
 export const fetchProfileByUsername = async (
   username: string,
   currentUserProfileId: number
-): Promise<TGetProfile> => {
+): Promise<TProfileWithRelations> => {
   return client.profile.findUniqueOrThrow({
     where: { username },
     include: {
@@ -43,7 +50,9 @@ export const ensureNotSelfRequest = (
   }
 };
 
-export const getFriendshipStatus = (profile: TGetProfile): TProfileApi => {
+export const getFriendshipStatus = (
+  profile: TProfileWithRelations
+): TProfileApi => {
   const {
     friendsAdded,
     friendOf,
@@ -68,4 +77,72 @@ export const getFriendshipStatus = (profile: TGetProfile): TProfileApi => {
   }
 
   return { ...profileData, friendshipStatus };
+};
+
+type Friendships = {
+  createdAt: Date;
+  id: number;
+  profile: TProfileWithRelations;
+}[];
+
+type ProfileWithFriendships = {
+  friendsAdded: Array<{ friend: TProfileWithRelations } & Friendship>;
+  friendOf: Array<{ profile: TProfileWithRelations } & Friendship>;
+};
+
+export const fetchProfileWithFriendships = (
+  username: string,
+  currentUserProfileId: number
+) => {
+  return client.profile.findUniqueOrThrow({
+    where: { username },
+    include: {
+      friendOf: {
+        include: {
+          profile: {
+            include: {
+              friendsAdded: { where: { friendId: currentUserProfileId } },
+              friendOf: { where: { profileId: currentUserProfileId } },
+              sentRequests: { where: { receiverId: currentUserProfileId } },
+              receivedRequests: { where: { senderId: currentUserProfileId } },
+            },
+            omit: { userId: true },
+          },
+        },
+      },
+      friendsAdded: {
+        include: {
+          friend: {
+            include: {
+              friendsAdded: { where: { friendId: currentUserProfileId } },
+              friendOf: { where: { profileId: currentUserProfileId } },
+              sentRequests: { where: { receiverId: currentUserProfileId } },
+              receivedRequests: { where: { senderId: currentUserProfileId } },
+            },
+            omit: { userId: true },
+          },
+        },
+      },
+    },
+  });
+};
+
+export const combineFriendships = (
+  profile: ProfileWithFriendships
+): Friendships => {
+  const fromFriendsAdded = profile.friendsAdded.map(
+    ({ createdAt, id, friend }) => ({
+      createdAt,
+      id,
+      profile: friend,
+    })
+  );
+
+  const fromFriendOf = profile.friendOf.map(({ createdAt, id, profile }) => ({
+    createdAt,
+    id,
+    profile,
+  }));
+
+  return [...fromFriendsAdded, ...fromFriendOf];
 };

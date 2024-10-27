@@ -34,15 +34,17 @@ function ProfileTitle({ identifiers, styles, mode }: Props) {
     <div
       onClick={(e) => handleNavigateProfile(e)}
       className={twMerge(
-        'text-secondary flex gap-2 items-center font-bold underline-offset-4 cursor-pointer',
+        'text-secondary w-full min-w-0 font-bold underline-offset-4 cursor-pointer',
         styles?.names
       )}
     >
       {mode && mode === 'full' ? (
-        <div className="truncate flex flex-col leading-none">
-          <span className="hover:underline">
-            {identifiers.firstName} {identifiers.lastName}
-          </span>
+        <div className="flex flex-col leading-none">
+          <div className="flex items-center min-w-0">
+            <span className="hover:underline truncate">
+              {identifiers.firstName} {identifiers.lastName}
+            </span>
+          </div>
           <span
             className={twMerge(
               'font-medium text-xs text-secondary/50',
@@ -53,23 +55,19 @@ function ProfileTitle({ identifiers, styles, mode }: Props) {
           </span>
         </div>
       ) : (
-        <>
-          <div className="truncate">
-            <span className="hover:underline">
-              {identifiers.firstName} {identifiers.lastName}
-            </span>
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="truncate hover:underline">
+            {identifiers.firstName} {identifiers.lastName}
           </div>
-          <div>
-            <span
-              className={twMerge(
-                'font-medium text-xs text-secondary/50',
-                styles?.username
-              )}
-            >
-              @{identifiers.username}
-            </span>
-          </div>
-        </>
+          <span
+            className={twMerge(
+              'font-medium text-xs text-secondary/50 whitespace-nowrap',
+              styles?.username
+            )}
+          >
+            @{identifiers.username}
+          </span>
+        </div>
       )}
     </div>
   );

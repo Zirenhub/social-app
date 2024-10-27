@@ -4,8 +4,10 @@ import { HttpException } from "../exceptions/error";
 import { HTTP_RESPONSE_CODE } from "../constants/constant";
 import client from "../prisma";
 import {
+  combineFriendships,
   ensureNotSelfRequest,
   fetchProfileByUsername,
+  fetchProfileWithFriendships,
   getFriendshipStatus,
   validateCurrentUserProfile,
 } from "../utils/profileUtils";
@@ -213,27 +215,19 @@ const getProfileFriendships = async (
 ) => {
   try {
     const { username: requestUsername } = req.params;
-    const profile = await client.profile.findUniqueOrThrow({
-      where: { username: requestUsername },
-      include: {
-        friendOf: { include: { profile: { omit: { userId: true } } } },
-        friendsAdded: { include: { friend: { omit: { userId: true } } } },
-      },
-    });
+    const { id } = validateCurrentUserProfile(req.user);
 
-    const { friendsAdded, friendOf } = profile;
-    const friendships = [
-      ...friendsAdded.map((friend) => {
-        const { createdAt, id, friend: profile } = friend;
-        return { createdAt, id, profile };
-      }),
-      ...friendOf.map((friend) => {
-        const { createdAt, id, profile } = friend;
-        return { createdAt, id, profile };
-      }),
-    ];
+    const requestProfile = await fetchProfileWithFriendships(
+      requestUsername,
+      id
+    );
 
-    sendSuccessResponse(res, friendships);
+    const requestProfileFriendships = combineFriendships(requestProfile);
+    const friendshipRelationsToCurrentUser = requestProfileFriendships.map(
+      (friend) => getFriendshipStatus(friend.profile)
+    );
+
+    sendSuccessResponse(res, friendshipRelationsToCurrentUser);
   } catch (err) {
     next(err);
   }
