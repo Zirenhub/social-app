@@ -4,15 +4,14 @@ import { useEffect } from 'react';
 import toastFormErrors from '../../utils/toastFormErrors';
 import ProfilePicture from '../profile/ProfilePicture';
 import { postContentMaxLength } from 'shared';
+import useLayoutStore from '../../stores/layoutStore';
 
-type Props = {
-  onSuccessSideEffect?: () => void;
-};
+function CreatePost() {
+  const { togglePostModal, isPostModalOpen } = useLayoutStore();
 
-function CreatePost({ onSuccessSideEffect }: Props) {
   const postCreated = () => {
-    if (onSuccessSideEffect) {
-      onSuccessSideEffect();
+    if (isPostModalOpen) {
+      togglePostModal();
     }
     toast.success('Successfully created post!');
   };
@@ -32,7 +31,7 @@ function CreatePost({ onSuccessSideEffect }: Props) {
         <ProfilePicture styles="h-14 w-14 border-2 border-primary shadow-sm" />
         <textarea
           {...register('content')}
-          className="flex-1 bg-secondary/20 h-36 text-third placeholder-third/60 rounded-lg px-4 py-2 outline-none text-md resize-none shadow-inner"
+          className="flex-1 bg-secondary/20 h-36 text-third placeholder-third/60 rounded-lg px-4 py-2 outline-none text-md resize-none shadow-inner min-w-[500px]"
           placeholder="What is happening?"
           maxLength={postContentMaxLength}
         />
