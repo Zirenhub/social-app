@@ -1,5 +1,5 @@
 import { Outlet, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   slideAboveVariants,
   slideLeftVariants,
@@ -7,9 +7,18 @@ import {
 import Navigation from './Navigation';
 import Notifications from './Notifications';
 import useLayoutStore from '../../stores/layoutStore';
+import Modal from '../modal/Modal';
+import CreatePost from '../post/CreatePost';
+import ProfileEdit from '../profile/ProfileEdit';
 
 const Layout = () => {
-  const { isNotificationsSidebarOpen } = useLayoutStore();
+  const {
+    isNotificationsSidebarOpen,
+    isProfileEditOpen,
+    isPostModalOpen,
+    togglePostModal,
+    toggleProfileEdit,
+  } = useLayoutStore();
   const location = useLocation();
 
   return (
@@ -36,6 +45,22 @@ const Layout = () => {
             <Outlet />
           </motion.div>
           {isNotificationsSidebarOpen && <Notifications />}
+          <AnimatePresence>
+            {isPostModalOpen && (
+              <Modal
+                props={{ toggle: togglePostModal, title: 'Create a New Post!' }}
+              >
+                <CreatePost />
+              </Modal>
+            )}
+            {isProfileEditOpen && (
+              <Modal
+                props={{ toggle: toggleProfileEdit, title: 'Edit Profile' }}
+              >
+                <ProfileEdit />
+              </Modal>
+            )}
+          </AnimatePresence>
         </main>
       </div>
     </motion.div>

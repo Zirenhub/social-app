@@ -1,7 +1,5 @@
 import useAuthStore from '../../stores/authStore';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
-import CreatePostModal from '../post/CreatePostModal';
 import UserBar from './UserBar';
 import useLayoutStore from '../../stores/layoutStore';
 
@@ -77,11 +75,7 @@ function Navigation() {
           ))}
         </div>
       </ul>
-      {isPostModalOpen && (
-        <AnimatePresence>
-          <CreatePostModal />
-        </AnimatePresence>
-      )}
+
       <UserBar user={user} />
     </nav>
   );
