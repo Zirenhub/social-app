@@ -1,13 +1,5 @@
 import type { ApiResponse } from "./apiResponse";
-import {
-  User,
-  Profile,
-  Post,
-  Like,
-  Comment,
-  FriendRequest,
-  Friendship,
-} from "../types";
+import { User, Profile, Post, Like, Comment, FriendRequest } from "../types";
 
 type TFriendshipStatus = {
   status: "NOT_FRIENDS" | "FRIENDS" | "REQUEST_SENT" | "RECEIVED_REQUEST";

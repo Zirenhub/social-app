@@ -76,4 +76,4 @@ const ZUserLogIn = z.object({
     .max(18, getMaxCharError("Password", 18)),
 });
 
-export { ZUserSignUp, ZUserLogIn };
+export { ZUserSignUp, ZUserLogIn, UserSignUpWithoutPasswords as ZUser };

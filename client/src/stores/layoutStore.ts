@@ -5,9 +5,11 @@ type TLayout = {
   isNotificationsSidebarOpen: boolean;
   isPostModalOpen: boolean;
   isUserOptionsOpen: boolean;
+  isProfileEditOpen: boolean;
   toggleNotificationsSidebar: () => void;
   togglePostModal: () => void;
   toggleUserOptions: () => void;
+  toggleProfileEdit: () => void;
 };
 
 const useLayoutStore = create<TLayout>()(
@@ -15,6 +17,7 @@ const useLayoutStore = create<TLayout>()(
     isNotificationsSidebarOpen: false,
     isPostModalOpen: false,
     isUserOptionsOpen: false,
+    isProfileEditOpen: false,
     toggleNotificationsSidebar: () =>
       set((state) => ({
         isNotificationsSidebarOpen: !state.isNotificationsSidebarOpen,
@@ -23,6 +26,8 @@ const useLayoutStore = create<TLayout>()(
       set((state) => ({ isPostModalOpen: !state.isPostModalOpen })),
     toggleUserOptions: () =>
       set((state) => ({ isUserOptionsOpen: !state.isUserOptionsOpen })),
+    toggleProfileEdit: () =>
+      set((state) => ({ isProfileEditOpen: !state.isProfileEditOpen })),
   }))
 );
 

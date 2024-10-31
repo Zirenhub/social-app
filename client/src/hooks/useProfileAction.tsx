@@ -7,6 +7,7 @@ import {
   useFriendshipRequestMutation,
 } from '../stores/profileStore';
 import ProfileActionBtn from '../components/common/ProfileActionBtn';
+import useLayoutStore from '../stores/layoutStore';
 
 type renderProps = {
   profile: TProfileApi;
@@ -29,6 +30,8 @@ function useProfileAction({
   acceptMutation,
   deleteMutation,
 }: Props) {
+  const { toggleProfileEdit } = useLayoutStore();
+
   const makeCallbacks = (
     onSuccessMsg: string,
     callback?: onSuccessCallback
@@ -67,7 +70,11 @@ function useProfileAction({
     const { status } = profile.friendshipStatus;
     if (isMyProfile)
       return (
-        <ProfileActionBtn label="Edit Profile" className={styles.editProfile} />
+        <ProfileActionBtn
+          label="Edit Profile"
+          className={styles.editProfile}
+          onClick={toggleProfileEdit}
+        />
       );
     if (request.isPending)
       return (
