@@ -61,6 +61,7 @@ const ProfileHeader = ({ scrollRef, profile, isMyProfile }: Props) => {
       {/* Full Header */}
       <motion.div
         className={`bg-green-400 rounded-t-md h-[${headerHeight}px] z-10 mb-4`}
+        datatype="header"
         ref={fullHeaderRef}
         style={{
           opacity: fullHeaderOpacity,

@@ -25,6 +25,9 @@ function ProfileTitle({ identifiers, styles, mode }: Props) {
     e.stopPropagation();
     const navigateTo = `/${identifiers.username}`;
     if (pathname === navigateTo) {
+      document
+        .querySelector('[datatype="header"]')
+        ?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
     navigate(navigateTo);
