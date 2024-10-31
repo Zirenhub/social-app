@@ -1,10 +1,19 @@
-import { scaleVariants } from '../../constants/constants';
 import { motion } from 'framer-motion';
-import useLayoutStore from '../../stores/layoutStore';
-import CreatePost from './CreatePost';
+import { ReactNode } from 'react';
+import { scaleVariants } from '../../constants/constants';
 
-function CreatePostModal() {
-  const { togglePostModal } = useLayoutStore();
+type ChildrenProps = {
+  toggle: () => void;
+  title: string;
+};
+
+type Props = {
+  props: ChildrenProps;
+  children: ReactNode;
+};
+
+function Modal({ props, children }: Props) {
+  const { toggle, title } = props;
 
   return (
     <>
@@ -17,21 +26,21 @@ function CreatePostModal() {
         exit="exit"
         className="fixed inset-0 z-30 flex items-center justify-center"
       >
-        <div className="relative z-40 p-4 bg-primary rounded-xl shadow-xl text-secondary w-[500px] max-w-full">
+        <div className="relative flex flex-col z-40 p-4 bg-primary rounded-xl shadow-xl text-secondary">
           <div className="flex items-center justify-between mb-4">
             <button
-              onClick={togglePostModal}
+              onClick={toggle}
               className="text-lg text-fourth hover:text-secondary transition-colors"
             >
               X
             </button>
-            <p className="font-semibold text-lg">Create a New Post!</p>
+            <p className="font-semibold text-lg">{title}</p>
           </div>
-          <CreatePost onSuccessSideEffect={togglePostModal} />
+          {children}
         </div>
       </motion.div>
     </>
   );
 }
 
-export default CreatePostModal;
+export default Modal;
