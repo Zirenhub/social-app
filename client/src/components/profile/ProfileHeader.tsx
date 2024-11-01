@@ -78,11 +78,18 @@ const ProfileHeader = ({ scrollRef, profile, isMyProfile }: Props) => {
               <p className="text-secondary/70">@{profile.username}</p>
             </div>
           </div>
-          <div className="flex flex-col -translate-y-2 pr-6 items-end">
-            {renderActionButton({ profile, isMyProfile })}
-            <p className="text-xs text-secondary/70 whitespace-nowrap">
-              Joined {format(new Date(profile.createdAt), 'MMMM yyyy')}
-            </p>
+          <div className="flex flex-col pr-6 items-end">
+            {profile.bio && (
+              <p className="mb-5 bg-primary rounded-md shadow-md px-3 py-2">
+                {profile.bio}
+              </p>
+            )}
+            <div className="flex flex-col items-end -translate-y-2">
+              {renderActionButton({ profile, isMyProfile })}
+              <p className="text-xs text-secondary/70 whitespace-nowrap">
+                Joined {format(new Date(profile.createdAt), 'MMMM yyyy')}
+              </p>
+            </div>
           </div>
         </div>
       </motion.div>
