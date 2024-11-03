@@ -62,6 +62,12 @@ const Passwords = z
 // refine validations dont get triggerd
 // hacky solution
 const ZUserSignUp = z.intersection(UserSignUpWithoutPasswords, Passwords);
+const { shape } = UserSignUpWithoutPasswords;
+const ZUpdate = z.object({
+  firstName: shape.firstName,
+  lastName: shape.lastName,
+  bio: shape.bio,
+});
 
 const ZUserLogIn = z.object({
   email: z
@@ -76,4 +82,4 @@ const ZUserLogIn = z.object({
     .max(18, getMaxCharError("Password", 18)),
 });
 
-export { ZUserSignUp, ZUserLogIn, UserSignUpWithoutPasswords as ZUser };
+export { ZUserSignUp, ZUserLogIn, ZUpdate };

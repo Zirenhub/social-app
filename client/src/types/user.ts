@@ -1,8 +1,8 @@
-import { ZUser, ZUserLogIn, ZUserSignUp } from 'shared';
+import { ZUpdate, ZUserLogIn, ZUserSignUp } from 'shared';
 import { z } from 'zod';
 
 type TLogInData = z.infer<typeof ZUserLogIn>;
 type TSignUpData = z.infer<typeof ZUserSignUp>;
-type TUser = z.infer<typeof ZUser>;
+type TUpdate = z.infer<typeof ZUpdate>;
 
-export type { TLogInData, TSignUpData, TUser };
+export type { TLogInData, TSignUpData, TUpdate };

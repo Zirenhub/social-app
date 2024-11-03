@@ -3,9 +3,10 @@ import bcrypt from "bcrypt";
 import client from "../prisma";
 import jwt from "jsonwebtoken";
 import { sendSuccessResponse } from "../utils/responseHandler";
-import { ZUserSignUp, ZUserLogIn } from "@shared";
+import { ZUserSignUp, ZUserLogIn, TAuthUserApi } from "@shared";
 import { HttpException } from "../exceptions/error";
 import { APP_ERROR_MESSAGE, HTTP_RESPONSE_CODE } from "../constants/constant";
+import signCookie from "../utils/signCookie";
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -14,26 +15,24 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       where: { email },
       include: { profile: true },
     });
+    if (user.profile == null) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.NOT_FOUND,
+        APP_ERROR_MESSAGE.userDoesntExist
+      );
+    }
     const { passwordHash, ...userWithoutPassword } = user;
 
     const match = await bcrypt.compare(password, passwordHash);
-    if (match) {
-      const token = jwt.sign(userWithoutPassword, process.env.SECRET!, {
-        expiresIn: "1h",
-      });
-      res.cookie("token", token, {
-        httpOnly: true,
-        sameSite: "strict",
-        secure: true,
-      });
-
-      sendSuccessResponse(res, userWithoutPassword);
-    } else {
+    if (!match) {
       throw new HttpException(
         HTTP_RESPONSE_CODE.UNAUTHORIZED,
         APP_ERROR_MESSAGE.invalidCredentials
       );
     }
+
+    signCookie(res, userWithoutPassword as TAuthUserApi);
+    sendSuccessResponse(res, userWithoutPassword);
   } catch (err) {
     next(err);
   }
@@ -83,14 +82,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
       omit: { passwordHash: true },
     });
 
-    const token = jwt.sign(newUserWithProfile, process.env.SECRET!, {
-      expiresIn: "1h",
-    });
-    res.cookie("token", token, {
-      httpOnly: true,
-      sameSite: "strict",
-      secure: true,
-    });
+    signCookie(res, newUserWithProfile as TAuthUserApi);
 
     sendSuccessResponse(res, newUserWithProfile);
   } catch (err) {
@@ -101,6 +93,7 @@ const signup = async (req: Request, res: Response, next: NextFunction) => {
 const whoami = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (req.user) {
+      // FIIIIIIIIIIIx
       sendSuccessResponse(res, req.user);
     } else {
       throw new HttpException(

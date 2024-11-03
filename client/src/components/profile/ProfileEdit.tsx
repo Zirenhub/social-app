@@ -1,33 +1,53 @@
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import useAuthStore from '../../stores/authStore';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TUser } from '../../types/user';
-import { ZUser } from 'shared';
+import { TUpdate } from '../../types/user';
+import { ZUpdate } from 'shared';
 import ProfilePicture from './ProfilePicture';
+import { useUpdateProfileMutation } from '../../stores/profileStore';
+import { useEffect } from 'react';
+import toastFormErrors from '../../utils/toastFormErrors';
+import { toast } from 'react-toastify';
 
 function ProfileEdit() {
   const { user } = useAuthStore();
+  const { mutate } = useUpdateProfileMutation();
 
-  const formMethods = useForm<TUser>({
-    resolver: zodResolver(ZUser),
+  const formMethods = useForm<TUpdate>({
+    resolver: zodResolver(ZUpdate),
     defaultValues: { ...user?.profile, bio: user?.profile.bio || undefined },
   });
 
-  const { register } = formMethods;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = formMethods;
+  const onSubmit: SubmitHandler<TUpdate> = (data) => {
+    mutate(data, {
+      onError: (err) => {
+        toast.error(err.message);
+      },
+    });
+  };
+
+  useEffect(() => {
+    toastFormErrors(errors);
+  }, [errors]);
 
   return (
-    <form className="flex flex-col">
+    <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex bg-white/60 p-3 rounded-lg shadow-inner">
         <div className="flex flex-col">
           <label>First Name</label>
           <input
             {...register('firstName')}
-            className="bg-secondary outline-none text-primary py-1 px-3 rounded-lg shadow-lg"
+            className="bg-primary outline-none border-2 border-third/50 text-secondary py-1 px-3 rounded-lg shadow-lg"
           />
           <label>Last Name</label>
           <input
             {...register('lastName')}
-            className="bg-secondary outline-none text-primary py-1 px-3 rounded-lg shadow-lg"
+            className="bg-primary outline-none border-2 border-third/50 text-secondary py-1 px-3 rounded-lg shadow-lg"
           />
         </div>
         <div className="flex flex-col mx-3 items-center justify-end gap-2">
@@ -43,7 +63,7 @@ function ProfileEdit() {
           <label>Bio</label>
           <textarea
             {...register('bio')}
-            className="outline-none border-2 resize-none border-third/50 bg-secondary text-primary py-1 px-3 rounded-lg shadow-lg h-full"
+            className="outline-none border-2 resize-none border-third/50 bg-primary text-secondary py-1 px-3 rounded-lg shadow-lg h-full"
             maxLength={160}
           />
         </div>

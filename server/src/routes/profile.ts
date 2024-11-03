@@ -4,6 +4,10 @@ import profileController from "../controllers/profileController";
 
 const profileRouter: Router = Router();
 
+// Update profile
+
+profileRouter.put("/", verifyJwt, profileController.updateProfile);
+
 // Get all friend requests for the authenticated user
 profileRouter.get(
   "/friend-requests",

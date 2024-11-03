@@ -13,6 +13,7 @@ import {
   getProfileApi,
   getProfileFriendshipsApi,
   postFriendshipRequestApi,
+  updateProfileApi,
 } from '../api/profileApi';
 import { getProfileLikesApi, getProfilePostsApi } from '../api/postApi';
 import { ApiError } from '../api/error';
@@ -174,6 +175,19 @@ export const useDeleteFriendshipMutation = ({
     onError: (err: ApiError) => {
       console.error(err.message);
       if (onError) onError(err.message);
+    },
+  });
+};
+
+export const useUpdateProfileMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateProfileApi,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.profile(data.username),
+      });
     },
   });
 };

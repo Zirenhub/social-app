@@ -2,11 +2,9 @@ import { HttpException } from "../exceptions/error";
 import { HTTP_RESPONSE_CODE } from "../constants/constant";
 import {
   Friendship,
-  Profile,
   TAuthUserApi,
   TFriendshipStatus,
   TProfileApi,
-  TProfileBase,
 } from "@shared";
 import client from "../prisma";
 import { TProfileWithRelations } from "../types/profile";

@@ -11,6 +11,8 @@ import {
   getFriendshipStatus,
   validateCurrentUserProfile,
 } from "../utils/profileUtils";
+import { TAuthUserApi, ZUpdate } from "@shared";
+import signCookie from "../utils/signCookie";
 
 const getProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -233,6 +235,32 @@ const getProfileFriendships = async (
   }
 };
 
+const updateProfile = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.user) {
+      throw new HttpException(
+        HTTP_RESPONSE_CODE.UNAUTHORIZED,
+        "Invalid user session."
+      );
+    }
+    const userProfile = validateCurrentUserProfile(req.user);
+    const validatedData = ZUpdate.parse(req.body);
+    const updatedProfile = await client.profile.update({
+      where: { id_userId: { id: userProfile.id, userId: userProfile.userId } },
+      data: { ...validatedData },
+    });
+    req.user.profile = updatedProfile;
+    sendSuccessResponse(res, updatedProfile);
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 export default {
   getProfile,
   sendFriendRequest,
@@ -241,4 +269,5 @@ export default {
   acceptFriendRequest,
   deleteFriendship,
   getProfileFriendships,
+  updateProfile,
 };

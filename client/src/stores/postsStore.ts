@@ -8,7 +8,6 @@ import {
 } from '../api/postApi';
 import { ApiError } from '../api/error';
 import queryKeys from '../constants/queryKeys';
-import { TMutations } from '../types/store';
 import useProfileStore from './profileStore';
 
 const correctDate = (post: TPostApi) => {
@@ -45,7 +44,13 @@ export const useGetPostQuery = (username: string, postId: string) => {
   });
 };
 
-export const useCreatePost = ({ onSuccess, onError }: TMutations) => {
+export const useCreatePost = ({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (errMsg: string) => void;
+}) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -63,7 +68,7 @@ export const useCreatePost = ({ onSuccess, onError }: TMutations) => {
           return [correctDate(data), ...oldData];
         }
       );
-      if (onSuccess) onSuccess(data);
+      if (onSuccess) onSuccess();
     },
     onError: (err: ApiError) => {
       console.log(err);
@@ -80,6 +85,7 @@ export const usePostLike = () => {
   return useMutation({
     mutationFn: createPostLikeApi,
     onSuccess: (data) => {
+      // do this on each needed place
       queryClient.setQueryData(queryKeys.posts, (oldData: TPostApi[] = []) => {
         return oldData.map((post) => (post.id === data.id ? data : post));
       });

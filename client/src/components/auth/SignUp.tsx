@@ -1,10 +1,10 @@
 import PageOne from './signUpPages/PageOne';
 import PageTwo from './signUpPages/PageTwo';
 import { useSignUpForm } from './helpers/useSignUpForm';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FIRST_PAGE_FIELDS } from '../../constants/constants';
-import { toast } from 'react-toastify';
 import { TSignUpData } from '../../types/user';
+import toastFormErrors from '../../utils/toastFormErrors';
 
 function SignUp() {
   const [page, setPage] = useState<1 | 2>(1);
@@ -12,18 +12,9 @@ function SignUp() {
   const { formMethods, getDayOptions, submit, getYearOptions, formErrors } =
     useSignUpForm();
 
-  const notifyFormErrors = useCallback(() => {
-    const errorMessages = Object.values(formErrors).map(
-      (error) => error?.message
-    );
-    errorMessages.forEach((message) => {
-      if (message) toast.error(message, { toastId: message });
-    });
-  }, [formErrors]);
-
   useEffect(() => {
-    notifyFormErrors();
-  }, [formErrors, notifyFormErrors]);
+    toastFormErrors(formErrors);
+  }, [formErrors]);
 
   const nextPage = async () => {
     // validate only fields that exist on first page of the signup process
@@ -32,7 +23,7 @@ function SignUp() {
     if (isValid) {
       setPage(2);
     } else {
-      notifyFormErrors();
+      toastFormErrors(formErrors);
     }
   };
 
